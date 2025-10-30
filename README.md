@@ -1,6 +1,6 @@
 # n8n工作流
 
----
+*** 
 此仓库存储我在YouTube频道和B站频道分享的N8N工作流相关知识且开源免费                        
 
 ### 个人信息
@@ -10,11 +10,11 @@ GitHub地址：https://github.com/NanGePlus
 
 ### 系列视频列表
 
---- 
+*** 
 
 ### 其他推荐
 
----  
+***  
 
 大模型应用技术Agent系列                 
 https://github.com/NanGePlus/ReActAgentsTest                              
