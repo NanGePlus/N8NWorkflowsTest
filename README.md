@@ -13,7 +13,7 @@
 5. 大模型代理平台: https://nangeai.top/                        
 
 ## 系列视频列表
-1. 01_【收藏这一篇就够了】一次搞定 n8n 低代码平台：部署 + 安全升级（零数据丢失） + 汉化 + 快速入门三件宝 
+1. 01_n8n零基础入门一次搞定：Docker私有化部署平台 +服务零数据丢失安全升级 + 平台语言汉化 + 快速入门三件法宝          
 - 资料在 resource 文件夹中的 01_*** 文件夹，下载即可                   
 - YouTube频道对应视频: https://github.com/NanGePlus/ReActAgentsTest                  
 - B站频道对应视频: https://github.com/NanGePlus/ReActAgentsTest                      
