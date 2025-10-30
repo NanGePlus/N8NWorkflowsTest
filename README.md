@@ -15,7 +15,6 @@ GitHub地址：https://github.com/NanGePlus
 ### 其他推荐
 
 ***  
-
 大模型应用技术Agent系列                 
 https://github.com/NanGePlus/ReActAgentsTest                              
 https://github.com/NanGePlus/RagWithMilvusTest                                           
