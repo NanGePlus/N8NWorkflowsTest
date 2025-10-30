@@ -14,7 +14,7 @@
 
 ## 系列视频列表
 1. 01_【收藏这一篇就够了】一次搞定 n8n 低代码平台：部署 + 安全升级（零数据丢失） + 汉化 + 快速入门三件宝 
-- 资料在 resource 文件夹中的 01_***           
+- 资料在 resource 文件夹中的 01_*** 文件夹，下载即可                   
 - YouTube频道对应视频: https://github.com/NanGePlus/ReActAgentsTest                  
 - B站频道对应视频: https://github.com/NanGePlus/ReActAgentsTest                      
 
@@ -23,7 +23,7 @@
 1. 大模型应用技术开发-入门系列            
 https://github.com/NanGePlus/LLMsBasisDevelopment                         
 
-2. 大模型应用技术开发-MCP系列    
+2. 大模型应用技术开发-MCP系列
 https://github.com/NanGePlus/MCPServerTest               
 
 3. 大模型应用技术开发-RAG系列                                  
