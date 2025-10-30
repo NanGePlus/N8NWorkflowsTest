@@ -4,9 +4,9 @@
 
 ### 个人信息
 
-YouTube频道(南哥AGI研习社)：https://www.youtube.com/@%E5%8D%97%E5%93%A5AGI%E7%A0%94%E4%B9%A0%E7%A4%BE                   
-B站频道(南哥AGI研习社)：https://space.bilibili.com/509246474                   
-GitHub地址：https://github.com/NanGePlus            
+1. YouTube频道(南哥AGI研习社)：https://www.youtube.com/@%E5%8D%97%E5%93%A5AGI%E7%A0%94%E4%B9%A0%E7%A4%BE                   
+2. B站频道(南哥AGI研习社)：https://space.bilibili.com/509246474                   
+3. GitHub地址：https://github.com/NanGePlus            
 
 ## 系列视频列表
 
