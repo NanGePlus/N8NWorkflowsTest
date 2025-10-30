@@ -1,6 +1,4 @@
-# 1、n8n介绍
-
-### @南哥AGI研习社 (B站 或 YouTube 搜索“南哥AGI研习社”)         
+# 1、n8n介绍 
 
 n8n官网：https://n8n.io/                                       
 n8n Github地址：https://github.com/n8n-io/n8n   星标 153K                                                   
