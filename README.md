@@ -23,7 +23,7 @@
 1. 大模型应用技术开发-入门系列            
 https://github.com/NanGePlus/LLMsBasisDevelopment                         
 
-2. 大模型应用技术开发-MCP系列
+2. 大模型应用技术开发-MCP系列    
 https://github.com/NanGePlus/MCPServerTest               
 
 3. 大模型应用技术开发-RAG系列                                  
