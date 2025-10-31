@@ -6,11 +6,12 @@
 
 ### 个人信息
 
-1. YouTube频道(南哥AGI研习社)：https://www.youtube.com/@%E5%8D%97%E5%93%A5AGI%E7%A0%94%E4%B9%A0%E7%A4%BE                   
-2. B站频道(南哥AGI研习社)：https://space.bilibili.com/509246474                   
-3. GitHub地址：https://github.com/NanGePlus                    
-4. Gitee地址：https://gitee.com/NanGePlus                                 
-5. 大模型代理平台: https://nangeai.top/                        
+1. YouTube频道(南哥AGI研习社)：https://www.youtube.com/@%E5%8D%97%E5%93%A5AGI%E7%A0%94%E4%B9%A0%E7%A4%BE
+2. YouTube频道(南哥AGI研习社)：https://www.youtube.com/@南哥AGI研习社           
+3. B站频道(南哥AGI研习社)：https://space.bilibili.com/509246474                   
+4. GitHub地址：https://github.com/NanGePlus                    
+5. Gitee地址：https://gitee.com/NanGePlus                                 
+6. 大模型代理平台: https://nangeai.top/                        
 
 ## 系列视频列表
 1. 01_n8n零基础入门一次搞定：Docker私有化部署平台 +服务零数据丢失安全升级 + 平台语言汉化 + 快速入门三件法宝          
