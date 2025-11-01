@@ -1,0 +1,859 @@
+{
+  "name": "公众号文章自动采集和AI摘要生成并保存至本地工作流",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        448
+      ],
+      "id": "8c809c4a-a654-4acc-84ea-4d099582160a",
+      "name": "When clicking ‘Execute workflow’",
+      "notesInFlow": true,
+      "notes": "手动触发"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.content }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        112
+      ],
+      "id": "ca8d7064-e373-432b-b2d2-5ea3465f740d",
+      "name": "Markdown",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.content }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        272
+      ],
+      "id": "53514cc0-2dbf-4a8d-a640-b953caa0485e",
+      "name": "Markdown1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## 获取公众号文章\n**通过RSS源来获取公众号的文章**\n**http://www.jintiankansha.me/account/signup?invite_code=PJIFQVLQKJ 提供RSS源的订阅服务**",
+        "height": 624,
+        "width": 288,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1472,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "d5510090-bcd5-43c4-9429-c58f6d45e0f4",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 设置字段\n**将公众号文章内容由HTML格式转换为MarkDown格式**\n**并对获取到的字段进行过滤和调整**",
+        "height": 624,
+        "width": 384,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1152,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "a7b59d7f-fe94-42f9-bdf4-175d472890fc",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 触发方式\n**可选择多种触发方式运行工作流**",
+        "height": 624,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1728,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "6856f78d-eee6-4fa9-bbfc-c9e554ce582e",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.content }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        432
+      ],
+      "id": "eda8cf4b-cec2-4f86-a6e7-686b325c118d",
+      "name": "Markdown2",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## 合并数据并过滤\n**合并数据后筛选最近一天发布的文章**",
+        "height": 624,
+        "width": 384,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -736,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "618b1ba9-765b-44f3-ac98-a336a3c4ad5c",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 数据处理\n**对数据进行循环处理**\n**使用Code节点对数据进行处理**\n**再使用AI Agent节点对原文内容进行摘要生成**",
+        "height": 624,
+        "width": 944,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "84754a62-d082-4f2f-8b52-466218a125a4",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## 保存处理后的数据至本地\n**将处理后的数据下载到本地文件夹**",
+        "height": 624,
+        "width": 400,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        656,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "95afcb35-d44c-496d-ac4e-d6df014e10a8",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -224,
+        128
+      ],
+      "id": "7ac07a44-1c24-42e0-9c1a-11d38a34263c",
+      "name": "Loop Over Items",
+      "notesInFlow": true,
+      "onError": "continueRegularOutput",
+      "notes": "对数据做循环处理"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * 将Markdown文本转换为纯文本\n * @param {string} markdown - 输入的Markdown格式文本\n * @returns {string} - 转换后的纯文本字符串\n */\nfunction markdownToText(markdown) {\n    // 如果输入的markdown为空或undefined，则返回空字符串\n    if (!markdown) return '';\n\n    // 将输入的markdown字符串赋值给text变量，作为后续处理的副本\n    let text = markdown;\n\n    // 处理转义字符（移至开头，以确保在其他替换前解析转义）\n    // 使用正则表达式全局处理转义字符，将反斜杠及其后的特殊字符替换为原字符\n    text = text.replace(/\\\\([\\\\`*_{}\\[\\]()#+\\-.!])/g, '$1');\n\n    // 移除代码块\n    // 使用正则表达式全局替换代码块（由三个反引号包围的内容），替换为空字符串\n    text = text.replace(/```[\\s\\S]*?```/g, '');\n    // 使用正则表达式全局替换行内代码（由单个反引号包围的内容），保留内部文本\n    text = text.replace(/`([^`]+)`/g, '$1');\n\n    // 移除标题符号\n    // 使用正则表达式匹配并移除行首的1到6个#符号及其后的空格（多行模式）\n    text = text.replace(/^#{1,6}\\s+/gm, '');\n\n    // 移除粗体和斜体\n    // 使用正则表达式全局替换粗体标记（两个*或_包围的内容），保留内部文本\n    text = text.replace(/[*_]{2}([^*_]+)[*_]{2}/g, '$1'); // 粗体\n    // 使用正则表达式全局替换斜体标记（单个*或_包围的内容），保留内部文本\n    text = text.replace(/[*_]([^*_]+)[*_]/g, '$1'); // 斜体\n\n    // 处理链接\n    // 使用正则表达式全局替换链接标记[文本](URL)，保留文本部分\n    text = text.replace(/\\[([^\\]]+)\\]\\([^)]+\\)/g, '$1'); // [文本](链接)\n    // 使用正则表达式全局替换引用链接标记[文本][引用]，保留文本部分\n    text = text.replace(/\\[([^\\]]+)\\]\\[[^\\]]*\\]/g, '$1'); // [文本][引用]\n\n    // 移除图片标记（优化：始终移除图片标记，不保留alt文本，以避免孤立短词）\n    // 使用正则表达式全局替换图片标记![alt](URL)，替换为空字符串\n    text = text.replace(/!\\[([^\\]]*?)\\]\\([^)]+\\)/g, '');\n\n    // 处理列表\n    // 使用正则表达式多行模式移除无序列表标记（行首的-、*或+及其空格）\n    text = text.replace(/^[\\s]*[\\-*+]\\s+/gm, ''); // 无序列表\n    // 使用正则表达式多行模式移除有序列表标记（行首的数字.及其空格）\n    text = text.replace(/^[\\s]*\\d+\\.\\s+/gm, ''); // 有序列表\n\n    // 处理引用\n    // 使用正则表达式多行模式移除引用标记（行首的>及其空格）\n    text = text.replace(/^\\s*>\\s+/gm, '');\n\n    // 处理水平分割线\n    // 使用正则表达式多行模式将水平分割线（三个或更多-、*或_）替换为换行符\n    text = text.replace(/^\\s*[-*_]{3,}\\s*$/gm, '\\n');\n\n    // 移除HTML标签\n    // 使用正则表达式全局移除所有HTML标签\n    text = text.replace(/<[^>]+>/g, '');\n\n    // 清理多余的空行（优化：先按行trim，然后归一化空行）\n    // 按行分割，每行trim去除首尾空白\n    text = text.split('\\n').map(line => line.trim()).join('\\n');\n    // 使用正则表达式将三个或更多连续换行替换为两个换行（保留段落分隔）\n    text = text.replace(/\\n{3,}/g, '\\n\\n');\n    // 使用正则表达式全局移除字符串首尾的空白字符\n    text = text.replace(/^\\s+|\\s+$/g, '');\n\n    // 返回处理后的纯文本字符串\n    return text;\n}\n\n// 获取输入数据\n// 从n8n输入中获取第一个项的JSON数据，并赋值给input变量\nconst input = $input.first().json;\n\n// 格式化 pubDate\n// 从input中提取pubDate字段的值\nconst pubDate = input.pubDate;\n// 将pubDate字符串转换为Date对象\nconst date = new Date(pubDate);\n// 格式化日期为“YYYY.MM.DD HH:MM:SS”字符串，使用padStart确保两位数\nconst formattedDate = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;\n\n// 转换 Markdown 为纯文本\n// 调用markdownToText函数处理input.data字段的Markdown内容，得到纯文本\nconst plainText = markdownToText(input.data);\n\n// 返回 n8n 规范的输出\n// 返回一个数组，包含一个对象，符合n8n的输出规范\nreturn [{  // 输出对象的title字段，使用input.title\n    title: input.title,  // 输出对象的link字段，使用input.link\n    link: input.link,  // 输出对象的pubDate字段，使用格式化后的日期\n    pubDate: formattedDate,  // 输出对象的pubAuthor字段，使用input.pubAuthor\n    pubAuthor: input.pubAuthor,  // 输出对象的content字段，使用转换后的纯文本\n    content: plainText\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        336
+      ],
+      "id": "0eafea20-7125-493b-989e-0cbb0ffb7a87",
+      "name": "Code",
+      "notesInFlow": true,
+      "onError": "continueRegularOutput",
+      "notes": "对数据进行代码逻辑处理"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1680,
+        288
+      ],
+      "id": "2b09685a-6796-4b65-a2bf-5c66c82a6f68",
+      "name": "Schedule Trigger",
+      "notesInFlow": true,
+      "notes": "周期调度触发"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "e4e1c83f-5fa3-43cc-ae94-550eaf27aacf",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        128,
+        368
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "7pK7dz9kAUtqi7Dg",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=需要进行文本摘要的文本：### {{ $json.content }} ##",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "## Role : 文本摘要高手\n- 描述角色特质：专注于从大量文本中快速提取关键信息，生成简洁、准确、保留原文核心信息的摘要。\n- 其他背景信息：无特定背景要求，适用于处理各种类型的文本摘要需求。\n## Preferences :\n- 倾向于生成简洁、清晰的摘要，避免冗余信息。\n- 保持摘要的客观性和中立性。\n## Profile :\n- author: 南哥AGI研习社(B站、YouTube)\n- version: 1.0\n- language: 中文\n- description: 专门执行文本摘要任务，从原始文本中提取关键信息，生成简短、清晰的摘要。\n## Goals :\n- 从用户提供的文本中准确提取关键信息。\n- 生成简洁、清晰且保留原文主旨的摘要。\n## Constrains :\n- 不添加个人观点或解释。\n- 不包含超出原文内容的信息。\n## Skills :\n- 快速阅读和理解大量文本。\n- 精准提取关键信息和核心观点。\n- 简洁、准确的表达能力。\n## Workflow：\n- 首先快速阅读全文，理解其主要内容。\n- 然后识别并提取关键信息和核心观点。\n- 最后以简洁、准确的语言组织摘要。\n## OutputFormat :\n- 以简洁、清晰的句子形式呈现摘要。\n## Output STEP：\n### Output STEP：\n#### 第一步：理解全文\n- 1）快速阅读全文，把握文章的主题、论点和结构。\n- 2）识别文章的重要信息和次要信息。\n- 3）注意文章的语气和目的。\n#### 第二步：提取关键信息\n- 1）确定文章的主要论点和证据。\n- 2）提取文章的关键信息和数据。\n- 3）识别并记录文章中的特殊术语或概念。\n#### 第三步：组织摘要内容\n- 1）选择合适的句子结构，以简洁、直接的方式表达。\n- 2）确保摘要的连贯性和逻辑性。\n- 3）使用清晰、标准的语言，避免复杂或模糊的表达。\n#### 第四步：审阅和修改\n- 1）检查摘要的准确性和流畅性。\n- 2）确保摘要没有遗漏重要的信息。\n- 3）调整语言和句子结构，以提高摘要的质量。\n#### 第五步：最终检查\n- 1）确认摘要的长度适中，通常不超过原文的10%。\n- 2）确保摘要中没有主观评价或情感色彩。\n- 3）最后检查语法和拼写错误。\n- 确保摘要准确反映原文的主旨和重点。\n## Output Standard\n### 内容要求\n- **精确性**：摘要应准确反映原文的主要信息和核心观点，不添加个人解释或推测。\n- **简洁性**：摘要应尽可能简洁，去除冗余信息，同时保留原文的必要细节。\n- **客观性**：摘要应保持客观和中立，不包含主观评价或情感色彩。\n- **逻辑性**：摘要的结构应清晰，信息组织合理，易于理解。\n### 格式要求\n- **文本长度**：摘要的长度应适中，通常不超过原文的10%。\n- **句子结构**：使用简单、直接的句子结构，避免复杂的从句或长句。\n- **语言风格**：使用清晰、标准的语言，避免使用专业术语或难懂的词汇，除非它们对于理解摘要至关重要。\n### 输出步骤\n1. **理解全文**：快速阅读全文，把握文章的主题、论点和结构。\n2. **提取关键信息**：识别并提取文章的关键信息和核心观点。\n3. **组织摘要内容**：以简洁、准确的语言重新组织关键信息，形成摘要。\n4. **审阅和修改**：检查摘要的准确性和流畅性，进行必要的修改以确保质量。\n### 示例\n- **输入文本**：一篇关于最新人工智能研究的学术论文。\n- **输出摘要**：学术论文探讨了人工智能在图像识别领域的最新进展，特别是深度学习技术的应用。研究指出，通过使用大规模数据集和更复杂的神经网络结构，目前的图像识别准确率显著提高，但在处理某些复杂场景时仍存在挑战。\n## Initialization : 作为文本摘要高手，我专注于从大量文本中快速提取关键信息，生成简洁、准确、保留原文核心信息的摘要。请按照格式【需要进行文本摘要的文本：##（这里填写需要进行文本摘要的文本。）##】提供需要进行摘要的文本。"
+        }
+      },
+      "id": "afa71e41-4dea-410a-9b23-a010bf45b81e",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        128,
+        176
+      ],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "url": "http://rss.jintiankansha.me/rss/G42TC7BVMUZFHE3TCMJWGUGMZTGZRWGZDFGUYWIMBWGRRTMMA=",
+        "options": {
+          "ignoreSSL": true
+        }
+      },
+      "id": "4dcf38c9-ea76-4b33-8997-42d39aa1e818",
+      "name": "机器之心RSS",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -1392,
+        128
+      ],
+      "typeVersion": 1.1,
+      "notesInFlow": true,
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueErrorOutput",
+      "notes": "机器之心公众号"
+    },
+    {
+      "parameters": {
+        "url": "http://rss.jintiankansha.me/rss/GEYDONJSPQYWCMZV3BMYZDCYTFGQ======",
+        "options": {
+          "ignoreSSL": true
+        }
+      },
+      "id": "cd0a5cc8-3dd7-4733-8926-19b6d4563478",
+      "name": "新智元RSS",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -1392,
+        288
+      ],
+      "typeVersion": 1.1,
+      "alwaysOutputData": false,
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueErrorOutput",
+      "notes": "新智元公众号"
+    },
+    {
+      "parameters": {
+        "url": "http://rss.jintiankansha.me/rss/GEYDQOJYPQ3DKRWMJTDOM3EHFRTOZJRHE======",
+        "options": {
+          "ignoreSSL": true
+        }
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        -1392,
+        448
+      ],
+      "id": "b668db96-13e8-46a1-a063-511a42abf23c",
+      "name": "量子位RSS",
+      "executeOnce": false,
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueErrorOutput",
+      "notes": "量子位公众号"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df0c9951-b1ba-47a6-bea4-ebc5a4b95f95",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "566f7d57-d592-48b3-82cd-fa010d8d70f0",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "2bb11518-85f1-46cd-8105-1fceb90f20a9",
+              "name": "pubDate",
+              "value": "={{ $json.pubDate }}",
+              "type": "string"
+            },
+            {
+              "id": "bce97202-b8d5-4de8-a93e-3c9c5ff99fe3",
+              "name": "pubAuthor",
+              "value": "机器之心",
+              "type": "string"
+            },
+            {
+              "id": "1478e0ec-2591-42f9-aae1-0f8835f225eb",
+              "name": "data",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -928,
+        112
+      ],
+      "id": "438d8dfd-9bd9-4e2a-9404-7c9a64865445",
+      "name": "定义字段",
+      "notesInFlow": true,
+      "onError": "continueRegularOutput",
+      "notes": "定义字段"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df0c9951-b1ba-47a6-bea4-ebc5a4b95f95",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "566f7d57-d592-48b3-82cd-fa010d8d70f0",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "2bb11518-85f1-46cd-8105-1fceb90f20a9",
+              "name": "pubDate",
+              "value": "={{ $json.pubDate }}",
+              "type": "string"
+            },
+            {
+              "id": "bce97202-b8d5-4de8-a93e-3c9c5ff99fe3",
+              "name": "pubAuthor",
+              "value": "新智元",
+              "type": "string"
+            },
+            {
+              "id": "1478e0ec-2591-42f9-aae1-0f8835f225eb",
+              "name": "data",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -928,
+        272
+      ],
+      "id": "30e70296-8d91-4182-84b7-be989de8d84e",
+      "name": "定义字段1",
+      "notesInFlow": true,
+      "onError": "continueRegularOutput",
+      "notes": "定义字段"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df0c9951-b1ba-47a6-bea4-ebc5a4b95f95",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "566f7d57-d592-48b3-82cd-fa010d8d70f0",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "2bb11518-85f1-46cd-8105-1fceb90f20a9",
+              "name": "pubDate",
+              "value": "={{ $json.pubDate }}",
+              "type": "string"
+            },
+            {
+              "id": "bce97202-b8d5-4de8-a93e-3c9c5ff99fe3",
+              "name": "pubAuthor",
+              "value": "量子位",
+              "type": "string"
+            },
+            {
+              "id": "1478e0ec-2591-42f9-aae1-0f8835f225eb",
+              "name": "data",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -928,
+        432
+      ],
+      "id": "144b28b7-b206-447d-8888-59cbcb537a89",
+      "name": "定义字段2",
+      "notesInFlow": true,
+      "onError": "continueRegularOutput",
+      "notes": "定义字段"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -672,
+        256
+      ],
+      "id": "1a5ee224-ad0d-4613-bec0-d051bb55ee9d",
+      "name": "合并数据",
+      "notesInFlow": true,
+      "onError": "continueRegularOutput",
+      "notes": "合并数据&追加模式"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f09a15e4-8637-4d43-ae2d-81437e946f89",
+              "leftValue": "={{ new Date($json.pubDate).getTime() }}",
+              "rightValue": "={{ Date.now() - 24 * 3600 * 1000 }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -496,
+        272
+      ],
+      "id": "15d91e61-2910-461e-94be-4fdd22486f60",
+      "name": "筛选数据",
+      "notesInFlow": true,
+      "onError": "continueRegularOutput",
+      "notes": "筛选最近一天的文章"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=./n8ndata/{{ $now.format('yyyyMMdd_HHmmss') }}_article.json",
+        "options": {
+          "append": false
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        880,
+        80
+      ],
+      "id": "aaffdee4-9dae-47f3-a4d3-5fdec1bee92f",
+      "name": "从磁盘读/写文件",
+      "notesInFlow": true,
+      "notes": "保存文件至本地"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8106f6a1-8878-4fe2-97aa-eb3c8292b18a",
+              "name": "title",
+              "value": "={{ $('Code').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "b6771f6e-810e-4b3c-af36-e25b2ecf5d3f",
+              "name": "link",
+              "value": "={{ $('Code').item.json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "4f5f5455-1bc8-4d78-ba2e-1b95160b7a75",
+              "name": "pubDate",
+              "value": "={{ $('Code').item.json.pubDate }}",
+              "type": "string"
+            },
+            {
+              "id": "c9b94d15-eb3d-481b-a4c7-a39c95c04ace",
+              "name": "pubAuthor",
+              "value": "={{ $('Code').item.json.pubAuthor }}",
+              "type": "string"
+            },
+            {
+              "id": "2c0d36c4-6fb3-4a5f-88bf-f2db7523c9f3",
+              "name": "content",
+              "value": "={{ $('Code').item.json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "3b4b72de-9fcb-4f12-b6b1-ef90f6965785",
+              "name": "summary",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        432,
+        368
+      ],
+      "id": "a5bf433f-c7d0-4d67-b565-f266074dfc7c",
+      "name": "定义字段3",
+      "notesInFlow": true,
+      "onError": "continueRegularOutput",
+      "notes": "定义字段"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {
+          "fileName": "={{ $now.format('yyyyMMdd_HHmmss') }}_article.json"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        704,
+        80
+      ],
+      "id": "3ed87118-d923-4f4e-ac46-0c90833822b2",
+      "name": "数据转存为文件",
+      "executeOnce": false,
+      "notesInFlow": true,
+      "notes": "数据转换成json格式"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "定义字段",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown1": {
+      "main": [
+        [
+          {
+            "node": "定义字段1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown2": {
+      "main": [
+        [
+          {
+            "node": "定义字段2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "数据转存为文件",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "机器之心RSS",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "新智元RSS",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "量子位RSS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "定义字段3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "机器之心RSS": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "新智元RSS": {
+      "main": [
+        [
+          {
+            "node": "Markdown1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "量子位RSS": {
+      "main": [
+        [
+          {
+            "node": "Markdown2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "定义字段": {
+      "main": [
+        [
+          {
+            "node": "合并数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "定义字段1": {
+      "main": [
+        [
+          {
+            "node": "合并数据",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "定义字段2": {
+      "main": [
+        [
+          {
+            "node": "合并数据",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "合并数据": {
+      "main": [
+        [
+          {
+            "node": "筛选数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "筛选数据": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "定义字段3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "数据转存为文件": {
+      "main": [
+        [
+          {
+            "node": "从磁盘读/写文件",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "cffa0998-41d7-46ed-8ed0-6489763fa7cc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "387d9c3cbe1d3c8cdde2f5cfaeb7970cc758e2b32f2df8dea3e9983e51c712ab"
+  },
+  "id": "jqSh2173VewiIKKX",
+  "tags": [
+    {
+      "createdAt": "2025-10-27T22:51:46.928Z",
+      "updatedAt": "2025-10-27T22:51:46.928Z",
+      "id": "mAk97kqaq1yJgV47",
+      "name": "AI"
+    }
+  ]
+}
