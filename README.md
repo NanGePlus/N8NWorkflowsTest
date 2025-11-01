@@ -16,7 +16,12 @@
 1. 01_n8n零基础入门一次搞定：Docker私有化部署平台 +服务零数据丢失安全升级 + 平台语言汉化 + 快速入门三件法宝          
 - 资料在 resource 文件夹中的 01_*** 文件夹，下载即可                   
 - YouTube频道对应视频: https://youtu.be/Ldf15CPDY9Y                                
-- B站频道对应视频: https://www.bilibili.com/video/BV1Aq1NBYELp/                                 
+- B站频道对应视频: https://www.bilibili.com/video/BV1Aq1NBYELp/
+
+2. 02_【工作流】搭建n8n入门第一个工作流：微信公众号文章自动采集和AI摘要生成 常用技巧(标签、节点设置、表达式等)、RSS节点、Code节点、AIAgent节点、Loop节点等设置 解决本地文件读写难题          
+- 资料在项目内 workflows 文件夹中的 01_*** 文件夹，下载即可                                                  
+- YouTube频道对应视频: https://github.com/NanGePlus/ReActAgentsTest                  
+- B站频道对应视频: https://github.com/NanGePlus/ReActAgentsTest               
 
 ## 其他推荐
 
