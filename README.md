@@ -119,12 +119,17 @@ Gitee地址：[https://gitee.com/NanGePlus](https://gitee.com/NanGePlus)
 - YouTube频道对应视频:[https://youtu.be/veHZIqsrwPU](https://youtu.be/veHZIqsrwPU)             
 - B站频道对应视频:[https://www.bilibili.com/video/BV1ii9NBrE8b/](https://www.bilibili.com/video/BV1ii9NBrE8b/)
 
-**（9）7x24小时在线的私人数字员工：飞书+n8n+AI=你的「效率特种兵」，同样的架构，换Prompt，搞定N个场景。拖拽搭建｜产品/运营/自由职业者的效率外挂**
+**（9-1）7x24小时在线的私人数字员工：飞书+n8n+AI=你的「效率特种兵」，同样的架构，换Prompt，搞定N个场景。拖拽搭建｜产品/运营/自由职业者的效率外挂**
 
 - 说明文档在项目内 workflows 文件夹中的 09_*** 文件夹，工作流配置文件等资料在视频置顶评论中提供了下载链接            
 - YouTube频道对应视频:[https://youtu.be/mu1E7UC0HXc](https://youtu.be/mu1E7UC0HXc)             
 - B站频道对应视频:[https://www.bilibili.com/video/BV1eaokBDEv8/](https://www.bilibili.com/video/BV1eaokBDEv8/)
 
+**（9-2）【一镜到底保姆级实战跟做】7x24小时在线的私人数字员工：飞书+n8n+AI=你的「效率特种兵」，同样的架构换Prompt，搞定N个场景。拖拽搭建｜会打字就能用**
+
+- 说明文档在项目内 workflows 文件夹中的 09_*** 文件夹，工作流配置文件等资料在视频置顶评论中提供了下载链接            
+- YouTube频道对应视频:[https://youtu.be/u1rVI1U4oJE](https://youtu.be/u1rVI1U4oJE)             
+- B站频道对应视频:[https://www.bilibili.com/video/BV1oxokB9ErR/](https://www.bilibili.com/video/BV1oxokB9ErR/)
 
 ### 3、n8n实战经验小Tips篇
 
