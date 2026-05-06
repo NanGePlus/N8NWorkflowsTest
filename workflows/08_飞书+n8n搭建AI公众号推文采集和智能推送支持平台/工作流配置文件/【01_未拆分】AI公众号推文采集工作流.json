@@ -1,0 +1,1309 @@
+{
+  "name": "【01_未拆分】AI公众号推文采集工作流",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal/",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\":\"application/json; charset=utf-8\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"app_id\": {{ $json.app_id.toJsonString() }},\n    \"app_secret\": {{ $json.app_secret.toJsonString() }}\n} ",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        416,
+        240
+      ],
+      "id": "afa56d82-7a0a-4113-b2af-a08a03a2ccb0",
+      "name": "获取飞书token",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1152,
+        240
+      ],
+      "id": "a763bfff-9961-4018-b6ec-0a7061df3847",
+      "name": "循环处理",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        64,
+        240
+      ],
+      "id": "e6bd216f-550d-4210-befd-82c98c7e01a6",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        400
+      ],
+      "id": "acaa8a1e-a244-4d20-a72e-9e45f0d260a2",
+      "name": "合并最终数据统一处理",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Aggregate"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/im/v1/messages",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "receive_id_type",
+              "value": "chat_id"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"receive_id\":\"oc_9619619c722d54d1b6589f7405855d59\",\n    \"msg_type\": \"post\",\n    \"content\":\"{\\\"zh_cn\\\":{\\\"title\\\":\\\"AI资讯采集聚合进度\\\",\\\"content\\\":[[{\\\"tag\\\":\\\"at\\\",\\\"user_id\\\":\\\"\\\",\\\"user_name\\\":\\\"所有人\\\"}],[{\\\"tag\\\":\\\"md\\\",\\\"text\\\":\\\"**今天的AI资讯已全部收集并聚合完成** \\\"}],[{\\\"tag\\\":\\\"a\\\",\\\"href\\\":\\\"https://mcn33lfbwjgi.feishu.cn/base/ZyoUbGafqaPrbds2SHMcePgAnSh?table=tbl3pZv5Kg8hji0U&view=vewCrySxh8\\\",\\\"text\\\":\\\"点击查看详情\\\"}]]}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1536,
+        400
+      ],
+      "id": "d81a74e3-b7b5-41c3-8be7-a1b0f5d57e74",
+      "name": "向群组发送已完成消息",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad0fb75f-4bf4-4157-8641-07b6d87aa235",
+              "name": "app_id",
+              "value": "cli_a8759c6a213d500e",
+              "type": "string"
+            },
+            {
+              "id": "8211841d-8df6-413c-9518-6bd69380d327",
+              "name": "app_secret",
+              "value": "CQXLgi47bunYoTVoMsIa7Kn1NUSYvCCU",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        240
+      ],
+      "id": "05798628-649c-4cbd-9e5f-7ea481a96feb",
+      "name": "设置应用凭证",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2832,
+        208
+      ],
+      "id": "c2740851-a991-4bca-8f80-3bd67e924578",
+      "name": "循环处理 ",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n\nconst items = $input.all();\nconst list = items[0].json.data.items;\n\nreturn list.map(row => {\n  return {\n    json: {\n      title: row.fields[\"标题\"][0].text,\n      link: row.fields['原始链接'].link\n    },\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2320,
+        432
+      ],
+      "id": "e37d7590-d705-4e7b-b716-5df28e52946d",
+      "name": "拆分数据",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f09a15e4-8637-4d43-ae2d-81437e946f89",
+              "leftValue": "={{ new Date($json.pubDate).getTime() }}",
+              "rightValue": "={{ Date.now() - 24 * 3600 * 1000 }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        208
+      ],
+      "id": "88b7e960-edd5-4f29-b33a-1b0923c24959",
+      "name": "保留24小时内数据",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput",
+      "notes": "Filter"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $json.app_token }}/tables/{{ $json.table_id }}/records/search ",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id_type",
+              "value": "open_id"
+            },
+            {
+              "name": "page_token"
+            },
+            {
+              "name": "page_size",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"sort\": [\n    {\n      \"field_name\": \"ID\",\n      \"desc\": false\n    }\n  ],\n  \"filter\": {\n    \"conjunction\": \"and\",\n    \"conditions\": [\n      {\n        \"field_name\": \"创建时间\",\n        \"operator\": \"is\",\n        \"value\": [\n          \"CurrentMonth\"\n        ]\n      }\n    ]\n  },\n  \"automatic_fields\": false\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2144,
+        432
+      ],
+      "id": "350222dd-47a1-4b65-8f74-cfad58d3afdb",
+      "name": "获取过去30天内记录",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * 将Markdown文本转换为纯文本\n * @param {string} markdown - 输入的Markdown格式文本\n * @returns {string} - 转换后的纯文本字符串\n */\n\n// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n\nfunction markdownToText(markdown) {\n    // 如果输入的markdown为空或undefined，则返回空字符串\n    if (!markdown) return '';\n\n    // 将输入的markdown字符串赋值给text变量，作为后续处理的副本\n    let text = markdown;\n\n    // 处理转义字符（移至开头，以确保在其他替换前解析转义）\n    // 使用正则表达式全局处理转义字符，将反斜杠及其后的特殊字符替换为原字符\n    text = text.replace(/\\\\([\\\\`*_{}\\[\\]()#+\\-.!])/g, '$1');\n\n    // 移除代码块\n    // 使用正则表达式全局替换代码块（由三个反引号包围的内容），替换为空字符串\n    text = text.replace(/```[\\s\\S]*?```/g, '');\n    // 使用正则表达式全局替换行内代码（由单个反引号包围的内容），保留内部文本\n    text = text.replace(/`([^`]+)`/g, '$1');\n\n    // 移除标题符号\n    // 使用正则表达式匹配并移除行首的1到6个#符号及其后的空格（多行模式）\n    text = text.replace(/^#{1,6}\\s+/gm, '');\n\n    // 移除粗体和斜体\n    // 使用正则表达式全局替换粗体标记（两个*或_包围的内容），保留内部文本\n    text = text.replace(/[*_]{2}([^*_]+)[*_]{2}/g, '$1'); // 粗体\n    // 使用正则表达式全局替换斜体标记（单个*或_包围的内容），保留内部文本\n    text = text.replace(/[*_]([^*_]+)[*_]/g, '$1'); // 斜体\n\n    // 处理链接\n    // 使用正则表达式全局替换链接标记[文本](URL)，保留文本部分\n    text = text.replace(/\\[([^\\]]+)\\]\\([^)]+\\)/g, '$1'); // [文本](链接)\n    // 使用正则表达式全局替换引用链接标记[文本][引用]，保留文本部分\n    text = text.replace(/\\[([^\\]]+)\\]\\[[^\\]]*\\]/g, '$1'); // [文本][引用]\n\n    // 移除图片标记（优化：始终移除图片标记，不保留alt文本，以避免孤立短词）\n    // 使用正则表达式全局替换图片标记![alt](URL)，替换为空字符串\n    text = text.replace(/!\\[([^\\]]*?)\\]\\([^)]+\\)/g, '');\n\n    // 处理列表\n    // 使用正则表达式多行模式移除无序列表标记（行首的-、*或+及其空格）\n    text = text.replace(/^[\\s]*[\\-*+]\\s+/gm, ''); // 无序列表\n    // 使用正则表达式多行模式移除有序列表标记（行首的数字.及其空格）\n    text = text.replace(/^[\\s]*\\d+\\.\\s+/gm, ''); // 有序列表\n\n    // 处理引用\n    // 使用正则表达式多行模式移除引用标记（行首的>及其空格）\n    text = text.replace(/^\\s*>\\s+/gm, '');\n\n    // 处理水平分割线\n    // 使用正则表达式多行模式将水平分割线（三个或更多-、*或_）替换为换行符\n    text = text.replace(/^\\s*[-*_]{3,}\\s*$/gm, '\\n');\n\n    // 移除HTML标签\n    // 使用正则表达式全局移除所有HTML标签\n    text = text.replace(/<[^>]+>/g, '');\n\n    // 清理多余的空行（优化：先按行trim，然后归一化空行）\n    // 按行分割，每行trim去除首尾空白\n    text = text.split('\\n').map(line => line.trim()).join('\\n');\n    // 使用正则表达式将三个或更多连续换行替换为两个换行（保留段落分隔）\n    text = text.replace(/\\n{3,}/g, '\\n\\n');\n    // 使用正则表达式全局移除字符串首尾的空白字符\n    text = text.replace(/^\\s+|\\s+$/g, '');\n\n    // 返回处理后的纯文本字符串\n    return text;\n}\n\n// 获取输入数据\n// 从n8n输入中获取第一个项的JSON数据，并赋值给input变量\nconst input = $input.first().json;\n\n// 转换 Markdown 为纯文本\n// 调用markdownToText函数处理input.data字段的Markdown内容，得到纯文本\nconst plainText = markdownToText(input.data);\n\n// 返回 n8n 规范的输出\n// 返回一个数组，包含一个对象，符合n8n的输出规范\nreturn [{ \n    title: input.title,  \n    link: input.link, \n    pubDate: DateTime.fromFormat(input.pubDate, 'ccc, dd LLL yyyy HH:mm:ss ZZZ').toFormat('yyyy.MM.dd HH:mm:ss'),  \n    content: plainText,\n    source_name: input.source_name,\n    source_type: input.source_type,\n    source_weight: input.source_weight\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3024,
+        160
+      ],
+      "id": "04f98df8-58ff-4d8a-a4e3-945c7a798e33",
+      "name": "数据清洗",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "content": "## 获取RSS源数据并去重\n- 循环逐个读取RSS源链接数据\n- 对读取的数据进行去重处理(只保留24小时内的文章、且与内容采集汇总表中文章去重)\n- 文章内容数据清洗只保留部分字段\n",
+        "height": 608,
+        "width": 1008,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1744,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "bd7e6df1-2e75-4761-b13d-beb435159c0e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 获取RSS源列表\n- 设置飞书服务应用凭证并获取token\n- 指定具体访问哪一个飞书多维表格\n- 从RSS源多维表格中获取RSS源链接\n- 拆分多条RSS源链接分别读取数据",
+        "height": 608,
+        "width": 1056,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "2c917ca1-966e-4ed0-9137-ad01fb4ca7fe",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 对每个RSS源读取的每条文章内容AI生成摘要总结\n- 对某次循环中的RSS源读取到的数据进行循环处理\n- 对读取到的每条数据进行清洗(通过正则表达式清洗内容)\n- 使用AI自动生成文章摘要和打标签",
+        "height": 608,
+        "width": 1360,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2768,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "4ff02e9b-8f0a-4829-a36f-020d7948b76a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c5d06deb-33dc-471e-8892-bbf2bb8c94f5",
+              "name": "app_token",
+              "value": "ZyoUbGafqaPrbds2SHMcePgAnSh",
+              "type": "string"
+            },
+            {
+              "id": "1817ab91-0b11-40ed-b13e-2d8367d99638",
+              "name": "table_id",
+              "value": "tbl3pZv5Kg8hji0U",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3776,
+        128
+      ],
+      "id": "5fe5bbd6-7ca7-4667-86d2-b7d67a756772",
+      "name": "指定多维表格 ",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01c3b209-3dee-43d3-a117-dad4fc1229ff",
+              "name": "标题",
+              "value": "={{ $('数据清洗').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "3622637e-d4ad-4bc7-be46-c6a91cf51fbb",
+              "name": "摘要",
+              "value": "={{ $('AI文章摘要生成').item.json.output.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "47d22339-b636-46a0-9922-732a61e52c09",
+              "name": "原始内容",
+              "value": "={{ $('数据清洗').item.json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "4fa82663-db72-4075-b1c6-8853ccd48133",
+              "name": "原始链接",
+              "value": "={{ $('数据清洗').item.json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "41fa8064-19bb-47e0-9159-21d4ae28fc86",
+              "name": "来源名称",
+              "value": "={{ $('数据清洗').item.json.source_name }}",
+              "type": "string"
+            },
+            {
+              "id": "3d2f4748-ff14-4477-867c-2d8ae1baddee",
+              "name": "来源类型",
+              "value": "={{ $('数据清洗').item.json.source_type }}",
+              "type": "string"
+            },
+            {
+              "id": "6214c88c-d906-406f-8104-053db9b850c1",
+              "name": "发布时间",
+              "value": "={{ DateTime.fromFormat($('数据清洗').item.json.pubDate, 'yyyy.MM.dd HH:mm:ss').toMillis() }}",
+              "type": "string"
+            },
+            {
+              "id": "07378bda-e40e-4e0b-81dc-8b1614ae7740",
+              "name": "机器标签",
+              "value": "={{ $json.output.tag }}",
+              "type": "string"
+            },
+            {
+              "id": "084b8150-91de-4349-ad3e-b5b4ac6f1533",
+              "name": "推荐类型",
+              "value": "暂未推荐",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3584,
+        128
+      ],
+      "id": "6e3b1648-7872-4134-a53a-ebd74fdc8d5f",
+      "name": "固定字段",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "deepseek-v3",
+          "mode": "list",
+          "cachedResultName": "deepseek-v3"
+        },
+        "options": {
+          "frequencyPenalty": 0,
+          "responseFormat": "json_object",
+          "temperature": 0.7,
+          "timeout": 300000,
+          "maxRetries": 2,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3328,
+        368
+      ],
+      "id": "97114204-1e6d-4b0b-9e85-ec4a6c0a0838",
+      "name": "deepseek-v3",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "KcHzWF39O8ZtiGQr",
+          "name": "OpenAi account"
+        }
+      },
+      "notes": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"summary\": \"一、一句话结论\\n本文说明某工具在特定场景下的配置思路与常见踩坑点。\\n\\n二、核心要点\\n1. 概括作者提出的核心问题与解决方向。\\n2. 列出实现该方案的关键前提（环境/权限/版本）。\\n3. 说明推荐流程与不建议的做法及原因。\\n4. 补充文中提到的两个注意事项。\\n\\n三、关键信息\\n- 文中提到的版本号/时间窗口（若有）。\\n- 关键步骤：①… ②… ③…（若原文为步骤型）。\\n\\n四、适用读者/场景\\n适合正在搭建类似流程的开发者快速对照；不适合需要权威合规解读的正式法务场景。\\n\\n五、风险与局限\\n文中案例来自作者个人环境，参数与结论可能随版本变化；读者需结合自身环境验证。\",\n  \"tag\": \"教程、工具实践\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3472,
+        368
+      ],
+      "id": "89184482-7699-44b0-ab3e-b36bd14a9be6",
+      "name": "强制格式化输出",
+      "notesInFlow": true,
+      "notes": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('循环处理').item.json.source_link }}",
+        "options": {
+          "ignoreSSL": true
+        }
+      },
+      "id": "b932bf4f-10d2-46b6-b83d-49aad44c2048",
+      "name": "读取RSS源",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        1792,
+        320
+      ],
+      "typeVersion": 1.1,
+      "notesInFlow": true,
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "RSS Read"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $json.app_token }}/tables/{{ $json.table_id }}/records/search ",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id_type",
+              "value": "open_id"
+            },
+            {
+              "name": "page_token"
+            },
+            {
+              "name": "page_size",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"sort\": [\n    {\n      \"field_name\": \"ID\",\n      \"desc\": false\n    }\n  ],\n  \"filter\": {\n    \"conjunction\": \"and\",\n    \"conditions\": [\n      {\n        \"field_name\": \"是否启用\",\n        \"operator\": \"is\",\n        \"value\": [\n          \"true\"\n        ]\n      }    \n    ]\n  },\n  \"automatic_fields\": false\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        768,
+        240
+      ],
+      "id": "4c3b8c7b-5ac4-4902-8415-79b623daa0f7",
+      "name": "获取RSS源列表",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n\nconst items = $input.all();\nconst list = items[0].json.data.items;\n\nreturn list.map(row => {\n  return {\n    json: {\n      id: row.fields['ID'],\n      source_name: row.fields['来源名称'][0].text,\n      source_link: row.fields['来源地址'].link,\n      source_type: row.fields['来源类型'],\n      record_id: row.record_id,\n    },\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        240
+      ],
+      "id": "51131c94-51e5-47e7-8442-71f09e317daa",
+      "name": "拆分RSS源列表",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c5d06deb-33dc-471e-8892-bbf2bb8c94f5",
+              "name": "app_token",
+              "value": "ZyoUbGafqaPrbds2SHMcePgAnSh",
+              "type": "string"
+            },
+            {
+              "id": "1817ab91-0b11-40ed-b13e-2d8367d99638",
+              "name": "table_id",
+              "value": "tblJ00uJxTyEJYIj",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        592,
+        240
+      ],
+      "id": "f42cfa92-4c82-4692-b5bd-c17818d41827",
+      "name": "指定RSS源管理表",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $json.app_token }}/tables/{{ $json.table_id }}/records",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"fields\": {\n    \"标题\": {{ $('固定字段').item.json['标题'].toJsonString() }},\n    \"摘要\": {{ $('固定字段').item.json['摘要'].toJsonString() }},\n    \"原始内容\": {{ $('固定字段').item.json['原始内容'].toJsonString() }},\n    \"原始链接\": {\n      \"text\": {{ $('固定字段').item.json['原始链接'].toJsonString() }},\n      \"link\": {{ $('固定字段').item.json['原始链接'].toJsonString() }}\n    },\n    \"来源名称\": {{ $('固定字段').item.json['来源名称'].toJsonString() }},\n    \"来源类型\": {{ $('固定字段').item.json['来源类型'].toJsonString() }},\n    \"发布时间\": {{ $('固定字段').item.json[\"发布时间\"] }},\n    \"机器标签\": {{ $('固定字段').item.json['机器标签'].toJsonString() }}\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3968,
+        128
+      ],
+      "id": "34c2dc8d-a064-4e88-9fa9-a84debab5118",
+      "name": "新增记录到表格",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "title",
+              "field2": "title"
+            },
+            {
+              "field1": "link",
+              "field2": "link"
+            }
+          ]
+        },
+        "joinMode": "keepNonMatches",
+        "outputDataFrom": "input1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2464,
+        320
+      ],
+      "id": "c3318f62-b7dd-4493-a00b-fe36edaa818f",
+      "name": "去重(title+link)",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Merge"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3008,
+        416
+      ],
+      "id": "a187ae88-1d90-47c7-9f4e-448b2a16d8de",
+      "name": "等待两秒",
+      "webhookId": "5c859433-a2f0-4044-96c7-0c7750845b46"
+    },
+    {
+      "parameters": {
+        "content": "## 主循环体\n- 对RSS源逐一进行逻辑处理\n- 调用子工作流进行逻辑处理\n- 全部处理完成后发送即时群消息",
+        "height": 608,
+        "width": 656,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1072,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "7361b6d4-84b9-4b54-aa51-1cdc7227ed40",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=【公众号文章正文】  \n{{ $json.content }}\n\n【可选约束】  \n- 期望总字数：300–400 字 \n- 风格：客观简报",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=## 角色 : 公众号文章摘要助手\n- 专注于根据用户粘贴的**微信公众号文章正文**，输出**准确、可读、结构化**的中文摘要，帮助读者快速把握主旨与要点。\n- 只基于用户提供的文章内容进行提炼与归纳，**不编造**原文不存在的事实、数据、人名、引用与结论。\n- 目标是产出：**过滤噪声**（引流话术、重复套话、与主题无关的广告段落）、**保留关键信息**（论点、步骤、数字、时间、清单）、**标注信息缺口**（原文未说明处不猜测）的摘要方案。\n\n## 背景 :\n- 公众号文章常见结构：标题、导语、小标题、正文、文末引导关注/阅读原文、广告位、作者介绍等；摘要需**以正文信息为主**，弱化或忽略明显营销/引流段落。\n- 读者使用摘要的场景：速览、收藏笔记、转发给他人、工作汇报；不同场景对**篇幅**与**颗粒度**要求不同，需通过用户可选约束适配。\n- 模型易产生「过度概括」或「合理但虚假的细节」：摘要必须**可回溯到原文**，关键断言应有依据；不确定时明确写「原文未说明」。\n\n## 简介 :\n- author: 南哥\n- version: 1.2\n- language: 中文\n- description: 针对用户粘贴的「公众号文章全文或节选」，以**合法 JSON** 输出两个字段：`summary`（结构化中文摘要）与 `tag`（内容标签字符串，使用中文顿号分隔），并支持用户通过输入模板指定篇幅、风格与禁忌。\n\n## 任务 :\n- 识别文章**主题、立场、核心论点**与**论证结构**（现象—原因—对策 / 教程步骤 / 观点清单等）。\n- 将长文压缩为**短而准**的摘要：优先输出高信息密度句子，避免空洞形容词与标题党式夸张。\n- 若文中含**可核对信息**（数字、时间、专有名词、步骤、清单），单独整理；若无则标明「无」。\n- 温和提示文章的**片面性、营销倾向、证据不足**（若有）；若无则写「无明显额外风险提示」。\n- 最终将完整摘要内容写入 JSON 的 **`summary` 字符串**中，并输出 **`tag`** 字段为标签字符串（多个标签用中文顿号分隔）；结果仅输出一个 JSON 对象，且仅包含 `summary` 与 `tag` 两个键。\n\n## 约束条件（重要）:\n- **输出必须为合法 JSON 对象**，且**根对象有且仅有**两个键：`summary` 与 `tag`。二者都为字符串类型。**不得**增加其他键（如 `title`、`keywords` 等）。\n- **不得在 JSON 外**输出任何字符：不要 markdown 代码块（如 \\`\\`\\`json）、说明文字、标题、「以下是结果」等前后缀；**仅输出一行或多行组成的单个 JSON 对象**（允许美化缩进时的换行，但仍须整体可 `JSON.parse`）。\n- **`summary` 字符串内部**：沿用下方「summary 内容结构」组织正文（可用 `\\n` 换行）；字符串内双引号必须转义为 `\\\"`，反斜杠为 `\\\\`，换行可写作 `\\n`。\n- **`tag` 字段规则**：输出 1–3 个标签，使用中文短词（每个 2–8 字），优先体现文章主题与类型（如「AI工具」「职场效率」「教程」「行业观察」）；若有多个标签，使用中文顿号「、」连接（例如：`教程、工具实践`）；避免空泛词（如「文章」「内容」）和重复标签。\n- **严禁编造**：不得补充原文未出现的数据、案例、人名、引用来源；不得把推测写为事实。\n- **噪声处理**：明显广告、关注引导、与主题无关的互推段落不纳入要点；若无法判断是否与主题相关，可写入「文中提及」类弱表述或标注「疑似推广段落，未作为核心依据」。\n- **引用原文**：如需引用关键句，控制在 **1–2 处**，使用短引号或「原文：」并尽量简短（注意 JSON 字符串转义）。\n- **篇幅**：默认 `summary` 总字数 **200–450 字**（除非用户在输入模板中另行指定）；「一句话结论」建议 **≤40 字**。\n- 若用户提供「禁用词/禁用风格」，摘要中**不得出现**这些词或风格。\n- 若文章过短、乱码、非中文为主或信息极度不足，在 `summary` 内先说明局限，再给力所能及摘要。\n\n## 技能 :\n- 快速划分文章层次：标题与导语、小标题锚点、段落功能（背景/论点/论据/步骤/总结）。\n- 提炼可执行信息：清单、步骤、对比表、时间线与注意事项。\n- 区分「事实陈述」「观点判断」「猜测性表述」，摘要中对应使用客观措辞（如「作者认为」「文中称」）。\n- 控制信息密度：用「动词 + 对象/结论」写要点，减少「非常、极其」等弱信息词。\n- 自检：每条要点能否在原文中找到依据；数字与时间是否与原文一致；`tag` 是否准确不重复且分隔符正确（中文顿号）；JSON 可被标准解析器解析。\n\n## 工作流：\n- 第一步：解析输入，确认文章语言、完整性，是否存在大量无关噪声段落。\n- 第二步：提取主题与结论，列出 3–7 条核心要点（按重要性或原文顺序）。\n- 第三步：提取关键可核对信息（数字、时间、步骤、清单）；没有则标明「无」。\n- 第四步：判断适用读者/阅读场景；识别潜在片面性或营销倾向（若有）。\n- 第五步：按「summary 内容结构」拼成一段完整中文文本，并基于主题提炼 1–3 个标签后写入 `tag` 字符串（多个标签用中文顿号连接），再封装为**仅含 `summary` 与 `tag` 键**的 JSON 对象并输出；校验 `JSON.parse` 可通过。\n\n## 输出格式（必遵）:\n- **根对象**（仅此一个对象，仅含以下两个键）：\n  - `summary`：字符串。其内容为中文摘要正文，**建议**严格使用以下结构（小标题文字可一字不改；段落之间用 `\\n` 分隔）：\n  - `tag`：字符串。包含 1–3 个中文短标签，多个标签使用中文顿号「、」分隔，需与文章主题强相关且不重复。\n\n```\n一、一句话结论\n（1 句话，≤40 字）\n\n二、核心要点\n（3–7 条，每条单独一行）\n\n三、关键信息\n（可核对信息；没有则写「无」）\n\n四、适用读者/场景\n（1–2 句话）\n\n五、风险与局限\n（没有则写「无明显额外风险提示」）\n```\n\n- **禁止**：额外 JSON 键；JSON 外的 markdown 或解释文字；非 JSON 文本与 JSON 混排；`tag` 为空字符串、使用错误分隔符或无意义标签。\n\n## 摘要策略参考\n- **观点/评论类**：结论前置 + 论据类型（数据/案例/逻辑）+ 作者态度边界。\n- **教程/清单类**：目标读者 + 前置条件 + 核心步骤（保持与原文顺序一致）。\n- **资讯/解读类**：事件要素（时间/主体/影响）+ 文中解读角度 + 未覆盖信息。\n- **故事/经历类**：主线一条 + 转折/收获 + 可复用的方法（若原文有）。\n\n## 输入模板（给用户填写，可简可详）\n【公众号文章正文】  \n（粘贴全文或节选；可含标题）\n\n【可选约束】  \n- 期望总字数（例如：200–300 字 / 500 字以内 / 仅 5 条要点）：  \n- 风格（客观简报 / 读书笔记 / 给领导的汇报 / 口语化）：  \n- 必须保留的专有名词或关键词（可选）：  \n- 禁用词或禁用风格（可选）：  \n- 是否需要「一句话结论」（是/否，默认是）：  \n\n## 输出样例（仅供参考）\n（以下为合法 JSON；实际输出时不要包 markdown 代码块。）\n\n```json\n{\n  \"summary\": \"一、一句话结论\\n本文说明某工具在特定场景下的配置思路与常见踩坑点。\\n\\n二、核心要点\\n1. 概括作者提出的核心问题与解决方向。\\n2. 列出实现该方案的关键前提（环境/权限/版本）。\\n3. 说明推荐流程与不建议的做法及原因。\\n4. 补充文中提到的两个注意事项。\\n\\n三、关键信息\\n- 文中提到的版本号/时间窗口（若有）。\\n- 关键步骤：①… ②… ③…（若原文为步骤型）。\\n\\n四、适用读者/场景\\n适合正在搭建类似流程的开发者快速对照；不适合需要权威合规解读的正式法务场景。\\n\\n五、风险与局限\\n文中案例来自作者个人环境，参数与结论可能随版本变化；读者需结合自身环境验证。\",\n  \"tag\": \"教程、工具实践\"\n}\n```\n\n## 初始化\n作为公众号文章摘要助手，我只根据你粘贴的**文章正文**与**可选约束**，输出**一个合法 JSON 对象**，且**仅有字段** `summary`（结构化中文摘要）与 `tag`（1–3 个中文标签组成的字符串，多个标签用中文顿号分隔）。请按「输入模板」提供内容（正文可长可短，约束可填可不填）。\n",
+          "maxIterations": 10,
+          "returnIntermediateSteps": false,
+          "passthroughBinaryImages": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        3232,
+        128
+      ],
+      "id": "369a6e80-386a-4e49-bd86-998df1776969",
+      "name": "AI文章摘要生成",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "AI Agent"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 12
+            },
+            {
+              "triggerAtHour": 17
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        432
+      ],
+      "id": "2670509c-b1c3-4112-94e3-cb6ac1720ab6",
+      "name": "每天12点和17点定时触发"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c5d06deb-33dc-471e-8892-bbf2bb8c94f5",
+              "name": "app_token",
+              "value": "ZyoUbGafqaPrbds2SHMcePgAnSh",
+              "type": "string"
+            },
+            {
+              "id": "1817ab91-0b11-40ed-b13e-2d8367d99638",
+              "name": "table_id",
+              "value": "tbl3pZv5Kg8hji0U",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1968,
+        432
+      ],
+      "id": "b752b482-c0cf-4943-b186-12124ee77954",
+      "name": "指定内容采集多维表格",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "executeOnce": true,
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4-mini"
+        },
+        "options": {
+          "frequencyPenalty": 0,
+          "responseFormat": "json_object",
+          "temperature": 0.7,
+          "timeout": 300000,
+          "maxRetries": 2,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3184,
+        368
+      ],
+      "id": "8a2301e2-c722-41b9-b2c1-d091c7fedeb3",
+      "name": "gpt-5.4-mini",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "KcHzWF39O8ZtiGQr",
+          "name": "OpenAi account"
+        }
+      },
+      "notes": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df0c9951-b1ba-47a6-bea4-ebc5a4b95f95",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "566f7d57-d592-48b3-82cd-fa010d8d70f0",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "2bb11518-85f1-46cd-8105-1fceb90f20a9",
+              "name": "pubDate",
+              "value": "={{ $json.pubDate }}",
+              "type": "string"
+            },
+            {
+              "id": "1478e0ec-2591-42f9-aae1-0f8835f225eb",
+              "name": "data",
+              "value": "={{ $json[\"content:encodedSnippet\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "9c64cc31-fb82-47c5-8920-e6f937497976",
+              "name": "source_name",
+              "value": "={{ $('循环处理').item.json.source_name }}",
+              "type": "string"
+            },
+            {
+              "id": "9c99a969-5539-4017-b3af-ea928e9811a5",
+              "name": "source_type",
+              "value": "={{ $('循环处理').item.json.source_type }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1968,
+        208
+      ],
+      "id": "1d290737-5cdf-4793-ae9b-3aa224893c5f",
+      "name": "清洗数据",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e9d53bda-af08-4175-b754-fdbcc2006cb6",
+              "leftValue": "={{ $json }}",
+              "rightValue": "={{ $items().length > 0 }}",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2624,
+        320
+      ],
+      "id": "67cf1fbc-82d0-4437-b1f7-c8f5bffb7ecc",
+      "name": "是否有数据",
+      "notesInFlow": true,
+      "retryOnFail": false,
+      "notes": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "获取飞书token": {
+      "main": [
+        [
+          {
+            "node": "指定RSS源管理表",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "循环处理": {
+      "main": [
+        [
+          {
+            "node": "合并最终数据统一处理",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "读取RSS源",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "设置应用凭证",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "合并最终数据统一处理": {
+      "main": [
+        [
+          {
+            "node": "向群组发送已完成消息",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "设置应用凭证": {
+      "main": [
+        [
+          {
+            "node": "获取飞书token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "循环处理 ": {
+      "main": [
+        [
+          {
+            "node": "等待两秒",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "数据清洗",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "拆分数据": {
+      "main": [
+        [
+          {
+            "node": "去重(title+link)",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "保留24小时内数据": {
+      "main": [
+        [
+          {
+            "node": "去重(title+link)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取过去30天内记录": {
+      "main": [
+        [
+          {
+            "node": "拆分数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "数据清洗": {
+      "main": [
+        [
+          {
+            "node": "AI文章摘要生成",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "指定多维表格 ": {
+      "main": [
+        [
+          {
+            "node": "新增记录到表格",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "固定字段": {
+      "main": [
+        [
+          {
+            "node": "指定多维表格 ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deepseek-v3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI文章摘要生成",
+            "type": "ai_languageModel",
+            "index": 1
+          },
+          {
+            "node": "强制格式化输出",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "强制格式化输出": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI文章摘要生成",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "读取RSS源": {
+      "main": [
+        [
+          {
+            "node": "指定内容采集多维表格",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "清洗数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取RSS源列表": {
+      "main": [
+        [
+          {
+            "node": "拆分RSS源列表",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "拆分RSS源列表": {
+      "main": [
+        [
+          {
+            "node": "循环处理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "指定RSS源管理表": {
+      "main": [
+        [
+          {
+            "node": "获取RSS源列表",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "新增记录到表格": {
+      "main": [
+        [
+          {
+            "node": "循环处理 ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "去重(title+link)": {
+      "main": [
+        [
+          {
+            "node": "是否有数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "等待两秒": {
+      "main": [
+        [
+          {
+            "node": "循环处理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI文章摘要生成": {
+      "main": [
+        [
+          {
+            "node": "固定字段",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "指定内容采集多维表格": {
+      "main": [
+        [
+          {
+            "node": "获取过去30天内记录",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-5.4-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI文章摘要生成",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "清洗数据": {
+      "main": [
+        [
+          {
+            "node": "保留24小时内数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "是否有数据": {
+      "main": [
+        [
+          {
+            "node": "循环处理 ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "等待两秒",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "71e1d487-08ee-4534-86b7-37eb6aba7693",
+  "meta": {
+    "instanceId": "830bfffc51ff88cd51b86a768f6a50a5b290896243e17b0bdf0f08551c38ba51"
+  },
+  "id": "33TufENO-JK0Mwd2MS2mX",
+  "tags": [
+    {
+      "updatedAt": "2025-12-24T02:04:19.807Z",
+      "createdAt": "2025-12-24T02:04:19.807Z",
+      "id": "7VxF0aUtlavDiK5p",
+      "name": "选题雷达模型"
+    },
+    {
+      "updatedAt": "2025-10-30T12:47:20.269Z",
+      "createdAt": "2025-10-30T12:47:20.269Z",
+      "id": "f21vDmcMsvedJbTO",
+      "name": "飞书"
+    },
+    {
+      "updatedAt": "2025-12-24T02:03:59.943Z",
+      "createdAt": "2025-12-24T02:03:59.943Z",
+      "id": "mn1xzWvFhYinK7S3",
+      "name": "选题池"
+    },
+    {
+      "updatedAt": "2025-12-11T03:10:23.364Z",
+      "createdAt": "2025-12-11T03:10:23.364Z",
+      "id": "oA2SUvB8FyMOZ7QI",
+      "name": "RSS"
+    },
+    {
+      "updatedAt": "2025-12-15T05:59:01.229Z",
+      "createdAt": "2025-12-15T05:59:01.229Z",
+      "id": "vvSdsOAB9ETafUmt",
+      "name": "多维表格"
+    }
+  ]
+}

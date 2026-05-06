@@ -1,0 +1,635 @@
+{
+  "name": "【02】AI公众号推文智能推送工作流",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        64,
+        144
+      ],
+      "id": "e2670bf4-8c03-4ab3-a4a7-fedf4c0850f7",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal/",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\":\"application/json; charset=utf-8\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"app_id\": {{ $json.app_id.toJsonString() }},\n    \"app_secret\": {{ $json.app_secret.toJsonString() }}\n} ",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        432,
+        192
+      ],
+      "id": "dd66978f-1cc3-4eb6-8437-a3c0efd7a4f9",
+      "name": "获取飞书token",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad0fb75f-4bf4-4157-8641-07b6d87aa235",
+              "name": "app_id",
+              "value": "cli_a8759c6a213d500e",
+              "type": "string"
+            },
+            {
+              "id": "8211841d-8df6-413c-9518-6bd69380d327",
+              "name": "app_secret",
+              "value": "CQXLgi47bunYoTVoMsIa7Kn1NUSYvCCU",
+              "type": "string"
+            },
+            {
+              "id": "7ad5378f-d552-4098-b55e-a0ec6b35e079",
+              "name": "app_token",
+              "value": "ZyoUbGafqaPrbds2SHMcePgAnSh",
+              "type": "string"
+            },
+            {
+              "id": "ef938e36-d7ea-4613-add0-f05950fe1ed6",
+              "name": "table_id",
+              "value": "tbl3pZv5Kg8hji0U",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        192
+      ],
+      "id": "05764e4a-7993-4f16-8573-7b2136e77da4",
+      "name": "设置应用凭证",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"topHead\": [\n    {\n      \"记录ID\": \"rec_example_1\",\n      \"ID\": \"12\",\n      \"标题\": \"示例：某领域关键政策解读\",\n      \"摘要\": \"一句话或短摘要\",\n      \"来源名称\": \"示例来源\",\n      \"来源类型\": \"示例来源类型\",\n      \"发布时间\": \"2026/03/25 07:50:00\",\n      \"原始链接\": \"https://example.com/a\",\n      \"机器标签\": \"行业观察、政策解读\",\n      \"reason\": \"影响面广且结论明确，适合做头条\"\n    }\n  ],\n  \"topQuick\": [\n    {\n      \"记录ID\": \"rec_example_2\",\n      \"ID\": \"13\",\n      \"标题\": \"示例：某事件最新进展\",\n      \"摘要\": \"（可选）一句话或短摘要\",\n      \"来源名称\": \"示例来源\",\n      \"来源类型\": \"示例来源类型\",\n      \"发布时间\": \"2026/03/25 07:50:00\",\n      \"原始链接\": \"https://example.com/b\",\n      \"机器标签\": \"快讯、事件更新\",\n      \"reason\": \"时效强、要点清晰，适合快讯\"\n    }\n  ],\n  \"topDeep\": [\n    {\n      \"记录ID\": \"rec_example_3\",\n      \"ID\": \"14\",\n      \"标题\": \"示例：从0到1的系统方法论\",\n      \"摘要\": \"（可选）一句话或短摘要\",\n      \"来源名称\": \"示例来源\",\n      \"来源类型\": \"示例来源类型\",\n      \"发布时间\": \"2026/03/25 07:50:00\",\n      \"原始链接\": \"https://example.com/c\",\n      \"机器标签\": \"方法论、深度分析\",\n      \"reason\": \"结构完整、可复用方法多，适合深度\"\n    }\n  ],\n  \"stats\": {\n    \"total\": 3,\n    \"processed\": 3,\n    \"head_count\": 1,\n    \"quick_count\": 1,\n    \"deep_count\": 1\n  }\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1392,
+        304
+      ],
+      "id": "e491c258-fd5c-4804-9c24-25fcd09f50ad",
+      "name": "强制格式化输出 ",
+      "notesInFlow": true,
+      "notes": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================\n// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n// n8n Code节点 - 清洗数据\n// ============================================\n\n// 获取所有输入项\nconst items = $input.all();\n// 提取第一项中的数据列表\nconst list = items[0].json.data.items;\n\n// 遍历列表，为每个选题计算综合排名得分\nconst processedList = list.map(row => {\n  // 获取发布时间的毫秒时间戳\n  const pubMillis = row.fields[\"发布时间\"]; // 毫秒时间戳\n\n  // 返回处理后的选题对象\n  return {\n    记录ID: row.record_id,\n    ID: row.fields[\"ID\"],\n    标题: row.fields[\"标题\"][0].text,\n    摘要: row.fields[\"摘要\"][0].text,\n    发布时间: DateTime.fromMillis(pubMillis).toFormat('yyyy/MM/dd HH:mm:ss'),\n    来源名称: row.fields[\"来源名称\"][0].text,\n    来源类型: row.fields[\"来源类型\"][0].text,\n    原始链接: row.fields[\"原始链接\"].link,\n    机器标签: row.fields['机器标签'][0].text\n  };\n});\n\n// 返回包含所有处理结果的数组\nreturn [\n  {\n    json: {\n      allResults: processedList,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        192
+      ],
+      "id": "b6f77764-8a0e-4826-930e-9efe504af56d",
+      "name": "清洗数据",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "deepseek-v3.2",
+          "mode": "list",
+          "cachedResultName": "deepseek-v3.2"
+        },
+        "options": {
+          "frequencyPenalty": 0,
+          "responseFormat": "json_object",
+          "temperature": 0.7,
+          "timeout": 300000,
+          "maxRetries": 2,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1184,
+        288
+      ],
+      "id": "5cd6d793-6f1c-4c11-a890-582561b09b36",
+      "name": "deepseek-v3.2",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "KcHzWF39O8ZtiGQr",
+          "name": "OpenAi account"
+        }
+      },
+      "notes": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================\n// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n// n8n Code节点 - 对生成的富文本内容进行压缩成一行并进行转义（配合飞书消息服务使用）\n// ============================================\n\nconst inputData = $input.all();\nconst feishuMessage = inputData[0].json;\n\n// 提取post.zh_cn的完整对象\nconst postZhCn = {\n    zh_cn: feishuMessage.content.post.zh_cn\n};\n\n// 转义函数\nfunction escapeForFeishu(obj) {\n    // 先转为标准JSON字符串(压缩格式)\n    let jsonStr = JSON.stringify(obj);\n    \n    // 再次stringify并去掉最外层引号,实现转义\n    let escapedStr = JSON.stringify(jsonStr);\n    escapedStr = escapedStr.slice(1, -1);\n    \n    return escapedStr;\n}\n\n// 对内容进行转义\nconst escapedContent = escapeForFeishu(postZhCn);\n\n// 构建最终输出\nconst result = {\n    msg_type: \"post\",\n    content: escapedContent\n};\n\nreturn { json: result };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1936,
+        128
+      ],
+      "id": "01a8edb5-e6ad-41a9-8a94-b89ae5534a2f",
+      "name": "压缩一行并转义",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================\n// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n// n8n Code节点 - 飞书富文本消息生成器（兼容中文字段名输入 + 富文本美化）\n// ============================================\n\nconst inputData = $input.all();\nconst data = inputData?.[0]?.json ?? {};\n\n// 输入：第1层就有 output\nconst output = data.output ?? data?.[0]?.output ?? {};\nconst topHead = output.topHead || [];\nconst topQuick = output.topQuick || [];\nconst topDeep = output.topDeep || [];\nconst stats = output.stats || {};\n\n// 工具：兼容中英字段名\nconst pick = (obj, keys, fallback = \"\") => {\n  if (!obj) return fallback;\n  for (const k of keys) {\n    const v = obj[k];\n    if (v !== undefined && v !== null && v !== \"\") return v;\n  }\n  return fallback;\n};\n\n// 工具：把标签字符串/数组统一成数组\nconst toTagArray = (v) => {\n  if (!v) return [];\n  if (Array.isArray(v)) return v.filter(Boolean);\n  if (typeof v === \"string\") {\n    return v\n      .split(/[、,，;；|]/)\n      .map((s) => s.trim())\n      .filter(Boolean);\n  }\n  return [];\n};\n\n// 工具：摘要美化（按行拆分 + 识别小标题）\nconst splitSummaryLines = (summary) => {\n  if (!summary || typeof summary !== \"string\") return [];\n  const raw = summary.replace(/\\r\\n/g, \"\\n\").replace(/\\r/g, \"\\n\").trim();\n  if (!raw) return [];\n\n  // 先按空行分段，再把段内按行拆开\n  const paras = raw.split(/\\n{2,}/g).map((p) => p.trim()).filter(Boolean);\n  const lines = [];\n  for (const p of paras) {\n    const sub = p.split(\"\\n\").map((l) => l.trim()).filter(Boolean);\n    if (sub.length === 1) lines.push(sub[0]);\n    else lines.push(...sub);\n    lines.push(\"\"); // 段落间留空行\n  }\n  // 去掉末尾空行\n  while (lines.length && lines[lines.length - 1] === \"\") lines.pop();\n  return lines;\n};\n\nconst isSectionHeader = (line) => {\n  // 例如：一、核心要点 / 二、关键信息 / 1. xxx / 1、xxx / - xxx\n  return (\n    /^[一二三四五六七八九十]+、/.test(line) ||\n    /^\\d+\\./.test(line) ||\n    /^\\d+、/.test(line) ||\n    /^[-–—•]\\s+/.test(line) ||\n    /^【.+】$/.test(line)\n  );\n};\n\nconst content = [];\n\n// 标题区\nconst formattedDateTime = $now.toFormat(\"yyyy/MM/dd HH:mm:ss\");\ncontent.push([{ tag: \"text\", text: `📊 AI公众号推文智能推送每日清单（${formattedDateTime}）\\n`, style: [\"bold\"] }]);\ncontent.push([{ tag: \"text\", text: \"━━━━━━━━━━━━━━━━━━━━\\n\" }]);\n\n// 数据概览\ncontent.push([{ tag: \"text\", text: \"📈 数据概览\\n\", style: [\"bold\"] }]);\ncontent.push([{ tag: \"text\", text: `总计: ${stats.total ?? \"-\"} | 已处理: ${stats.processed ?? \"-\"}\\n` }]);\ncontent.push([\n  {\n    tag: \"text\",\n    text: `头条: ${stats.head_count ?? topHead.length ?? 0} | 深度: ${stats.deep_count ?? topDeep.length ?? 0} | 快讯: ${stats.quick_count ?? topQuick.length ?? 0}\\n\\n`,\n  },\n]);\n\n// 通用渲染\nfunction renderItem(item, index) {\n  const title = pick(item, [\"标题\", \"title\"], \"(无标题)\");\n  const summary = pick(item, [\"摘要\", \"summary\"], \"\");\n  const link = pick(item, [\"原始链接\", \"source_link\", \"link\", \"url\"], \"\");\n  const sourceName = pick(item, [\"来源名称\", \"source_name\"], \"\");\n  const sourceType = pick(item, [\"来源类型\", \"source_type\"], \"\");\n  const publishTime = pick(item, [\"发布时间\", \"publish_time\", \"published_at\"], \"\");\n  const tags = toTagArray(pick(item, [\"机器标签\", \"tags\", \"machine_tags\"], \"\"));\n  const reason = pick(item, [\"reason\", \"分配原因\", \"allocation_reason\"], \"\");\n\n  // 标题\n  content.push([{ tag: \"text\", text: `${index + 1}. ${title}\\n`, style: [\"bold\"] }]);\n\n  // 来源信息（更紧凑）\n  const srcParts = [];\n  if (sourceName) srcParts.push(sourceName);\n  if (sourceType) srcParts.push(sourceType);\n  if (publishTime) srcParts.push(publishTime);\n  if (srcParts.length) content.push([{ tag: \"text\", text: `   📰 ${srcParts.join(\" | \")}\\n` }]);\n\n  // 原文链接（单独一行）\n  if (link) {\n    content.push([\n      { tag: \"text\", text: \"   🔗 原文: \" },\n      { tag: \"a\", text: \"点击查看\", href: link },\n      { tag: \"text\", text: \"\\n\" },\n    ]);\n  }\n\n  // 标签（更短更清爽）\n  if (tags.length) content.push([{ tag: \"text\", text: `   🏷️ 标签: ${tags.join(\"、\")}\\n` }]);\n\n  // 推荐理由（先于摘要）\n  if (reason) content.push([{ tag: \"text\", text: `   🧭 推荐理由: ${reason}\\n` }]);\n\n  // 摘要（放在推荐理由下面 + 美化）—— 取消摘要展示部分的文字加粗\n  if (summary) {\n    content.push([{ tag: \"text\", text: \"   📄 摘要\\n\" }]);\n\n    const lines = splitSummaryLines(summary);\n    for (const line of lines) {\n      if (!line) {\n        content.push([{ tag: \"text\", text: \"   \\n\" }]);\n        continue;\n      }\n\n      if (isSectionHeader(line)) {\n        content.push([{ tag: \"text\", text: `   ${line}\\n` }]);\n      } else {\n        // 普通行：轻缩进\n        content.push([{ tag: \"text\", text: `     ${line}\\n` }]);\n      }\n    }\n  }\n\n  // 条目间分隔\n  content.push([{ tag: \"text\", text: \"\\n\" }]);\n}\n\n// =====================\n// 头条\n// =====================\nif (topHead.length > 0) {\n  content.push([{ tag: \"text\", text: \"📰 头条\\n\", style: [\"bold\"] }]);\n  content.push([{ tag: \"text\", text: \"━━━━━━━━━━━━━━━━━━━━\\n\" }]);\n  topHead.forEach((item, index) => renderItem(item, index));\n}\n\n// =====================\n// 深度\n// =====================\nif (topDeep.length > 0) {\n  content.push([{ tag: \"text\", text: \"📖 深度\\n\", style: [\"bold\"] }]);\n  content.push([{ tag: \"text\", text: \"━━━━━━━━━━━━━━━━━━━━\\n\" }]);\n  topDeep.forEach((item, index) => renderItem(item, index));\n}\n\n// =====================\n// 快讯\n// =====================\nif (topQuick.length > 0) {\n  content.push([{ tag: \"text\", text: \"⚡ 快讯\\n\", style: [\"bold\"] }]);\n  content.push([{ tag: \"text\", text: \"━━━━━━━━━━━━━━━━━━━━\\n\" }]);\n  topQuick.forEach((item, index) => renderItem(item, index));\n}\n\n// 系统链接\ncontent.push([{ tag: \"text\", text: \"\\n━━━━━━━━━━━━━━━━━━━━\\n\" }]);\ncontent.push([\n  { tag: \"text\", text: \"🔗 \" },\n  {\n    tag: \"a\",\n    text: \"点击进入系统查看更过AI公众号推文详情\",\n    href: \"https://mcn33lfbwjgi.feishu.cn/base/ZyoUbGafqaPrbds2SHMcePgAnSh?table=tbl3pZv5Kg8hji0U&view=vewCrySxh8\",\n  },\n  { tag: \"text\", text: \"\\n\" },\n]);\n\nconst feishuMessage = {\n  msg_type: \"post\",\n  content: {\n    post: {\n      zh_cn: {\n        title: \"🤖 AI公众号推文采集和智能推送支持平台\",\n        content,\n      },\n    },\n  },\n};\n\nreturn { json: feishuMessage };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        128
+      ],
+      "id": "58192f3f-4e7d-40ab-ad82-ca04bc95fbb2",
+      "name": "飞书富文本消息生成",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/im/v1/messages",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "receive_id_type",
+              "value": "chat_id"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').first().json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"receive_id\":\"oc_9619619c722d54d1b6589f7405855d59\",\n  \"msg_type\": {{ $json.msg_type.toJsonString() }},\n  \"content\": \"{{ $json.content }}\"\n} \n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2128,
+        128
+      ],
+      "id": "0fe3b2bc-73fa-4cbc-be9c-679f5288f779",
+      "name": "发送即时消息",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "content": "## 获取AI公众号推文\n- 按照预定策略获取AI公众号推文（如获取当日采集的AI公众号推文）\n- 对获取到公众号推文进行数据清洗",
+        "height": 480,
+        "width": 912,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "72e2d6d6-906c-4176-8c45-38e98e242572",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 每日AI公众号推文智能决策\n- AI进行公众号推文推送决策\n- 并输出结构化公众号推文清单",
+        "height": 480,
+        "width": 736,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        928,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "50a5b51e-591c-4a6b-a4ee-14d5fdbca313",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 推送AI公众号推文清单\n- 将结构化AI公众号推文清单处理为富文本消息并推送至飞书群\n- 将每日AI公众号推文清单进行数据清洗后更新推荐类型",
+        "height": 480,
+        "width": 656,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "58c244ba-a84c-4e39-91a9-211ed7545b97",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $('设置应用凭证').item.json.app_token }}/tables/{{ $('设置应用凭证').item.json.table_id }}/records/search ",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id_type",
+              "value": "open_id"
+            },
+            {
+              "name": "page_token"
+            },
+            {
+              "name": "page_size",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"sort\": [\n    {\n      \"field_name\": \"ID\",\n      \"desc\": false\n    }\n  ],\n  \"filter\": {\n    \"conjunction\": \"and\",\n    \"conditions\": [\n      {\n        \"field_name\": \"创建时间\",\n        \"operator\": \"is\",\n        \"value\": [\n          \"Today\"\n        ]\n      }\n    ]\n  },\n  \"automatic_fields\": false\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        608,
+        192
+      ],
+      "id": "938c4c22-9323-4427-8325-30d616417bad",
+      "name": "获取当日发布记录",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================\n// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n// n8n Code节点 - 回去记录的record_id及对应的推荐类型进行多维表格数据更新\n// ============================================\n\n// 获取上一个节点的输出数据\nconst inputData = $input.all()[0].json.output;\n\n// 定义原始键名与中文名称的映射关系\nconst mapping = {\n  'topHead': '头条',\n  'topQuick': '快讯',\n  'topDeep': '深度'\n};\n\nlet results = [];\n\n// 遍历映射关系\nfor (const [key, chineseName] of Object.entries(mapping)) {\n  const records = inputData[key];\n  \n  // 如果该分类下有数据且是数组，则提取 record_id\n  if (records && Array.isArray(records)) {\n    records.forEach(record => {\n      results.push({\n        json: {\n          record_id: record.记录ID,\n          record_flag: chineseName // 使用对应的中文名称\n        }\n      });\n    });\n  }\n}\n\n// 返回符合 n8n 标准结构的数组\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        320
+      ],
+      "id": "90a35924-e57d-4d33-81c5-56b0b3cb8ba7",
+      "name": "每日选题清单数据清洗",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        320
+      ],
+      "id": "4bb56411-877b-4fca-8cf2-c248306f0968",
+      "name": "每天18:30定时触发"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4-mini"
+        },
+        "options": {
+          "frequencyPenalty": 0,
+          "responseFormat": "json_object",
+          "temperature": 0.7,
+          "timeout": 300000,
+          "maxRetries": 2,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1008,
+        288
+      ],
+      "id": "e2624548-db88-4ac6-aa6a-f4911691577d",
+      "name": "gpt-5.4-mini",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "KcHzWF39O8ZtiGQr",
+          "name": "OpenAi account"
+        }
+      },
+      "notes": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=【候选文章数据】\n{{ $json.allResults.toJsonString() }}\n\n【可选约束】\n- 栏目定位/主题：AI\n- 每类数量上限：头条 2、深度 3、快讯 5\n- 是否排除营销/软文：是",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=## 角色 : 公众号文章评选归类助手\n- 专注于从用户给定的「候选文章数据」中，评选出合适的文章，并按 **头条 / 深度 / 快讯 / 其他** 进行归类输出。\n- 只基于用户输入的数据做判断，不编造不存在的文章、不补充不存在的指标与事实。\n- 目标是产出：可用于内容运营/选题发布/信息流编排的「精选列表 + 结构化统计」结果。\n\n## 背景 :\n- 用户提供的数据常见为：一组文章候选（如：`记录ID`、`ID`、`标题`、`摘要`、`发布时间`、`来源名称`、`来源类型`、`原始链接`、`机器标签` 等）。\n- 归类需要同时考虑：信息价值、时效性、可验证性、受众范围、完整度、噪声与营销倾向。\n- 下游系统通常要求可机器解析的 JSON 输出，且字段固定。\n\n## 简介 :\n- author: 南哥\n- version: 1.0\n- language: 中文\n- description: 根据用户输入的候选文章数据（支持中文键名，如「记录ID/标题/摘要/原始链接/机器标签」等），评选并归类为「头条/深度/快讯/其他」，以**合法 JSON**输出固定结构：`output.topHead/topQuick/topDeep` 及 `output.stats` 统计字段（不输出 other 列表）。\n\n## 任务 :\n- 从候选集中评选「更值得读/更适合发布」的文章，并按如下四类归类：\n  - **头条**：影响面更广、结论更强、对目标读者价值更高的少量文章（通常 1–3 篇）。\n  - **深度**：长文/强分析/方法论/系统性框架/带数据论证的文章（通常 1–5 篇）。\n  - **快讯**：短、时效强、事实要点清晰、可快速浏览的文章（通常 3–10 篇）。\n  - **其他**：剩余文章（含不确定、信息不足、明显营销、与主题相关性弱等）。注意：本 prompt 的固定 JSON 输出结构不包含「其他」列表，因此「其他」仅用于内部决策与统计，不在输出中逐条列出。\n- 若用户未指定数量上限，按上面的「通常」范围输出；若候选不足，则按实际可用数量输出。\n- 对每篇入选文章，尽量保留其可识别信息（如 id/url/title/source/publish_time），便于后续跳转或去重。\n\n## 约束条件（重要）:\n- **输出必须为合法 JSON 对象**，不得在 JSON 外输出任何字符：不要 markdown 代码块、解释文字、标题或前后缀。\n- **输出结构必须严格符合下方「输出格式（必遵）」**：字段名、层级、类型需一致。\n- **不编造**：不得虚构文章、指标、来源、时间、链接；缺失字段允许留空字符串或不填入文章对象（但不要新增顶层结构）。\n- **字段来源强约束**：输出中除 `reason`、`score`（可选）外，文章对象里的所有字段与其值都必须**直接来自输入数据**（原样保留，不改写、不补全、不推断、不翻译字段值）；不得输出输入中不存在的字段值（例如自行生成来源名、时间、链接、标签等）。\n- **去重**：同一文章（同 id 或同 url 或标题高度相似且来源相同）只保留一条，优先保留信息更完整/指标更可靠的一条。\n- **广告与软文**：若数据中明显标注广告/软文/引流，默认归入「其他」，除非用户明确要求也参与评选。\n- **不确定性处理**：当信息不足导致无法判断时，归入「其他」（但不输出到 JSON 列表里）。\n\n## 输入字段兼容（重要）:\n- 候选文章可能使用中文键名。若出现以下字段，按语义等价理解并用于输出文章对象：\n  - `记录ID`/`recId`：文章唯一记录 ID（优先用作去重 key）\n  - `ID`：文章序号或来源侧 ID\n  - `标题`/`title`\n  - `摘要`/`summary`\n  - `发布时间`/`publish_time`\n  - `来源名称`/`source`\n  - `原始链接`/`url`\n  - `机器标签`/`machine_tag`（常为「标签1、标签2」字符串）\n\n## 评选与归类规则（建议执行）:\n- **头条（topHead）优先信号**（满足越多越优先）：\n  - 与目标主题高度相关（若用户提供主题/栏目定位，优先匹配）\n  - 结论明确、可行动/可决策、对多数读者有用\n  - 数据/引用/案例可核对（至少提供来源或清晰事实）\n  - 指标显著（阅读/点赞/分享）或来自权威来源（若提供）\n- **深度（topDeep）优先信号**：\n  - 结构完整：背景—问题—分析—方法/框架—结论\n  - 信息密度高、论证充分、步骤清晰、可复用方法论\n  - 文章长度更长或包含清单/图表/数据（若提供）\n- **快讯（topQuick）优先信号**：\n  - 时效性强（最新发布/事件更新）\n  - 事实要点清晰，适合 30–60 秒扫读\n  - 内容短、结论直、信息噪声少\n- **其他（other）**：\n  - 相关性弱、营销重、信息不足、重复、或不满足上述三类标准\n\n## 工作流：\n- 第一步：解析输入数据结构，抽取候选文章列表与每篇的可用字段（如 `记录ID`、`标题`、`摘要`、`原始链接`、`机器标签`、发布时间、来源等）。\n- 第二步：去重与基础过滤（明显缺失、明显广告、乱码等）。\n- 第三步：按「评选与归类规则」排序与归类，控制每类数量（若用户指定则遵循用户约束）。\n- 第四步：组装输出 JSON（不输出 other 列表），计算统计字段：total、processed、head_count、quick_count、deep_count（统计「其他」不在 stats 中单列）。\n- 第五步：JSON 自检：仅输出一个 JSON 对象；字段齐全；可 `JSON.parse`；counts 与数组长度一致。\n\n## 输出格式（必遵）:\n- 你必须输出 **一个 JSON 对象**，结构如下（字段名必须一致）：\n\n{\n  \"output\": {\n    \"topHead\": [],\n    \"topQuick\": [],\n    \"topDeep\": [],\n    \"stats\": {\n      \"total\": 0,\n      \"processed\": 0,\n      \"head_count\": 0,\n      \"quick_count\": 0,\n      \"deep_count\": 0\n    }\n  }\n}\n\n- 数组元素（每篇文章对象）字段**必须包含**以下键（固定字段集合，不得增删）：\n  - `记录ID` / `ID` / `标题` / `摘要` / `来源名称` / `来源类型` / `发布时间` / `原始链接` / `机器标签` / `reason`\n  - 其中除 `reason` 外，其余字段的**字段名与字段值**都必须来自输入数据（原样拷贝，不改写、不补全、不推断）。\n  - 若某篇候选文章缺少上述任一必需字段，则该篇文章**不得**被输出到 `topHead` / `topQuick` / `topDeep`（视为不入选，归入“其他/忽略”）。\n- **禁止**：在顶层新增其他键；输出多个 JSON；输出 markdown 代码块。\n\n## 输入模板（给用户填写）\n【候选文章数据】\n- JSON 数组（每项是一篇文章对象）\n\n【可选约束】\n- 栏目定位/主题（例如：AI、职场、城市生活、财经等）：\n- 每类数量上限（例如：头条 2、深度 3、快讯 5）：\n- 是否排除营销/软文（是/否，默认是）：\n- 必须包含/必须排除的关键词（可选）：\n\n## 输出样例（仅供参考）\n{\n  \"output\": {\n    \"topHead\": [\n      {\n        \"记录ID\": \"rec_example_1\",\n        \"ID\": \"12\",\n        \"标题\": \"示例：某领域关键政策解读\",\n        \"摘要\": \"一句话或短摘要\",\n        \"来源名称\": \"示例来源\",\n        \"来源类型\": \"示例来源类型\",\n        \"发布时间\": \"2026/03/25 07:50:00\",\n        \"原始链接\": \"https://example.com/a\",\n        \"机器标签\": \"行业观察、政策解读\",\n        \"reason\": \"影响面广且结论明确，适合做头条\"\n      }\n    ],\n    \"topQuick\": [\n      {\n        \"记录ID\": \"rec_example_2\",\n        \"ID\": \"13\",\n        \"标题\": \"示例：某事件最新进展\",\n        \"摘要\": \"（可选）一句话或短摘要\",\n        \"来源名称\": \"示例来源\",\n        \"来源类型\": \"示例来源类型\",\n        \"发布时间\": \"2026/03/25 07:50:00\",\n        \"原始链接\": \"https://example.com/b\",\n        \"机器标签\": \"快讯、事件更新\",\n        \"reason\": \"时效强、要点清晰，适合快讯\"\n      }\n    ],\n    \"topDeep\": [\n      {\n        \"记录ID\": \"rec_example_3\",\n        \"ID\": \"14\",\n        \"标题\": \"示例：从0到1的系统方法论\",\n        \"摘要\": \"（可选）一句话或短摘要\",\n        \"来源名称\": \"示例来源\",\n        \"来源类型\": \"示例来源类型\",\n        \"发布时间\": \"2026/03/25 07:50:00\",\n        \"原始链接\": \"https://example.com/c\",\n        \"机器标签\": \"方法论、深度分析\",\n        \"reason\": \"结构完整、可复用方法多，适合深度\"\n      }\n    ],\n    \"stats\": {\n      \"total\": 3,\n      \"processed\": 3,\n      \"head_count\": 1,\n      \"quick_count\": 1,\n      \"deep_count\": 1\n    }\n  }\n}\n\n## 初始化\n作为公众号文章评选归类助手，我只根据你提供的「候选文章数据」与「可选约束」，输出**一个合法 JSON 对象**，结构严格遵循「输出格式（必遵）」，将文章归类到 `topHead`、`topQuick`、`topDeep`，并给出 `stats` 统计（不输出 other 列表）。请直接粘贴候选数据。\n",
+          "maxIterations": 10,
+          "returnIntermediateSteps": false,
+          "passthroughBinaryImages": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1184,
+        64
+      ],
+      "id": "3740f9e1-66d2-45c3-81c3-2b8e006184f0",
+      "name": "公众号文章评选归类助手",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "AI Agent"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $('设置应用凭证').item.json.app_token }}/tables/{{ $('设置应用凭证').item.json.table_id }}/records/{{ $json.record_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"fields\": {\n    \"推荐类型\": {{ $json.record_flag.toJsonString() }}\n  }\n} ",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2128,
+        320
+      ],
+      "id": "50bb541f-7a1f-4477-a6b3-209d87ebad31",
+      "name": "更新记录 推荐类型",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "设置应用凭证": {
+      "main": [
+        [
+          {
+            "node": "获取飞书token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "设置应用凭证",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取飞书token": {
+      "main": [
+        [
+          {
+            "node": "获取当日发布记录",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "强制格式化输出 ": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "公众号文章评选归类助手",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "清洗数据": {
+      "main": [
+        [
+          {
+            "node": "公众号文章评选归类助手",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deepseek-v3.2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "强制格式化输出 ",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "公众号文章评选归类助手",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "压缩一行并转义": {
+      "main": [
+        [
+          {
+            "node": "发送即时消息",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "飞书富文本消息生成": {
+      "main": [
+        [
+          {
+            "node": "压缩一行并转义",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取当日发布记录": {
+      "main": [
+        [
+          {
+            "node": "清洗数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "每日选题清单数据清洗": {
+      "main": [
+        [
+          {
+            "node": "更新记录 推荐类型",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-5.4-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "公众号文章评选归类助手",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "公众号文章评选归类助手": {
+      "main": [
+        [
+          {
+            "node": "飞书富文本消息生成",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "每日选题清单数据清洗",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e21af5e5-6604-4db1-bb8e-b7ee9e047d98",
+  "meta": {
+    "instanceId": "830bfffc51ff88cd51b86a768f6a50a5b290896243e17b0bdf0f08551c38ba51"
+  },
+  "id": "rrNbRQKiDC8c5IuMhfI5W",
+  "tags": [
+    {
+      "updatedAt": "2025-10-30T12:47:20.269Z",
+      "createdAt": "2025-10-30T12:47:20.269Z",
+      "id": "f21vDmcMsvedJbTO",
+      "name": "飞书"
+    },
+    {
+      "updatedAt": "2025-10-30T12:47:07.824Z",
+      "createdAt": "2025-10-30T12:47:07.824Z",
+      "id": "v4AgHa1VDiat8yLA",
+      "name": "AI"
+    }
+  ]
+}
