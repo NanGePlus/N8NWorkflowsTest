@@ -1,0 +1,97 @@
+{
+  "name": "n8n配置飞书机器人事件订阅地址有效性测试",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 配置飞书机器人事件订阅地址有效性测试\n填写URL后，飞书服务器会向其发送一个 HTTP POST 以验证地址有效期，请求格式为 JSON ，带 CHALLENGE 参数。应用接收此请求后，需要解析出 CHALLENGE 值，并在 1 秒内回复 CHALLENGE 值。",
+        "height": 336,
+        "width": 720,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -128,
+        -1184
+      ],
+      "typeVersion": 1,
+      "id": "5349cab0-c69d-41ac-b983-c3c73ab35310",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"challenge\": {{ $json.body.challenge.toJsonString() }}\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        400,
+        -1040
+      ],
+      "id": "e7213767-85cf-4caf-8866-0bc9ef48083c",
+      "name": "返回CHALLENGE",
+      "notesInFlow": true,
+      "notes": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "feishu-smart-bookkeeping",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -80,
+        -1040
+      ],
+      "id": "c2d63dab-4664-4f2d-baf6-7f5b053e1e89",
+      "name": "接收飞书端POST请求",
+      "webhookId": "a612e681-a437-4839-9e35-0f3049fd445c",
+      "notesInFlow": true,
+      "notes": "Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "接收飞书端POST请求": {
+      "main": [
+        [
+          {
+            "node": "返回CHALLENGE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "83356cb8-b333-4ce5-9095-2c4f50bb2b40",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "830bfffc51ff88cd51b86a768f6a50a5b290896243e17b0bdf0f08551c38ba51"
+  },
+  "id": "cDdAot5ey8XcjgxW",
+  "tags": [
+    {
+      "updatedAt": "2026-04-23T01:41:05.617Z",
+      "createdAt": "2026-04-23T01:41:05.617Z",
+      "id": "69AKQDhGcsr8K2e9",
+      "name": "飞书机器人"
+    },
+    {
+      "updatedAt": "2026-04-23T01:41:16.943Z",
+      "createdAt": "2026-04-23T01:41:16.943Z",
+      "id": "p7I7uvgNsgLIkOaj",
+      "name": "事件订阅"
+    }
+  ]
+}
