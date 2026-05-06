@@ -106,7 +106,7 @@ Gitee地址：[https://gitee.com/NanGePlus](https://gitee.com/NanGePlus)
 
 **（7）我用n8n+AI+飞书打造了一款AI选题神器！效率提升99.9%，告别主观决策。揭秘AI驱动的AI智能选题评审与决策支持平台搭建全过程**
 
-- 说明文档在项目内 workflows 文件夹中的 07_*** 文件夹，工作流配置文件等资料在视频置顶评论中提供了下载链接                                                 
+- 资料在项目内 workflows 文件夹中的 07_*** 文件夹，同时在视频置顶评论中也提供了下载链接                                                 
 - YouTube频道对应视频: [https://youtu.be/0J_KXNXKLm0](https://youtu.be/0J_KXNXKLm0)                                                             
 - B站频道对应视频: [https://www.bilibili.com/video/BV1uMkHB1Ego/](https://www.bilibili.com/video/BV1uMkHB1Ego/)  
 详细拆解演示视频:           
@@ -115,19 +115,19 @@ Gitee地址：[https://gitee.com/NanGePlus](https://gitee.com/NanGePlus)
 
 **（8）还再手动刷公众号推文？我用n8n+飞书+Agent搭了个公众号推文智能情报台：24小时内公众号推文自动去重归档并推送至飞书群，采集清洗/摘要/选编/推送闭环**
 
-- 说明文档在项目内 workflows 文件夹中的 08_*** 文件夹，工作流配置文件等资料在视频置顶评论中提供了下载链接            
+- 资料在项目内 workflows 文件夹中的 08_*** 文件夹，同时在视频置顶评论中也提供了下载链接        
 - YouTube频道对应视频:[https://youtu.be/veHZIqsrwPU](https://youtu.be/veHZIqsrwPU)             
 - B站频道对应视频:[https://www.bilibili.com/video/BV1ii9NBrE8b/](https://www.bilibili.com/video/BV1ii9NBrE8b/)
 
 **（9-1）7x24小时在线的私人数字员工：飞书+n8n+AI=你的「效率特种兵」，同样的架构，换Prompt，搞定N个场景。拖拽搭建｜产品/运营/自由职业者的效率外挂**
 
-- 说明文档在项目内 workflows 文件夹中的 09_*** 文件夹，工作流配置文件等资料在视频置顶评论中提供了下载链接            
+- 资料在项目内 workflows 文件夹中的 09_*** 文件夹，同时在视频置顶评论中也提供了下载链接         
 - YouTube频道对应视频:[https://youtu.be/mu1E7UC0HXc](https://youtu.be/mu1E7UC0HXc)             
 - B站频道对应视频:[https://www.bilibili.com/video/BV1eaokBDEv8/](https://www.bilibili.com/video/BV1eaokBDEv8/)
 
 **（9-2）【一镜到底保姆级实战跟做】7x24小时在线的私人数字员工：飞书+n8n+AI=你的「效率特种兵」，同样的架构换Prompt，搞定N个场景。拖拽搭建｜会打字就能用**
 
-- 说明文档在项目内 workflows 文件夹中的 09_*** 文件夹，工作流配置文件等资料在视频置顶评论中提供了下载链接            
+- 资料在项目内 workflows 文件夹中的 09_*** 文件夹，同时在视频置顶评论中也提供了下载链接           
 - YouTube频道对应视频:[https://youtu.be/u1rVI1U4oJE](https://youtu.be/u1rVI1U4oJE)             
 - B站频道对应视频:[https://www.bilibili.com/video/BV1oxokB9ErR/](https://www.bilibili.com/video/BV1oxokB9ErR/)
 
