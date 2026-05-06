@@ -1,0 +1,634 @@
+{
+  "name": "【02】AI智能选题决策工作流",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -128
+      ],
+      "id": "ce5cd203-285f-4dbd-9ba0-1ff4afbb9ac2",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal/",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\":\"application/json; charset=utf-8\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"app_id\": {{ $json.app_id.toJsonString() }},\n    \"app_secret\": {{ $json.app_secret.toJsonString() }}\n} ",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        16,
+        -80
+      ],
+      "id": "5a643488-f976-459f-8402-4aa11c776926",
+      "name": "获取飞书token",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad0fb75f-4bf4-4157-8641-07b6d87aa235",
+              "name": "app_id",
+              "value": "cli_a8759c6a213d500e",
+              "type": "string"
+            },
+            {
+              "id": "8211841d-8df6-413c-9518-6bd69380d327",
+              "name": "app_secret",
+              "value": "6bxgsxm5ETk0zcWmbGfyrfU6qZ21TZkx",
+              "type": "string"
+            },
+            {
+              "id": "7ad5378f-d552-4098-b55e-a0ec6b35e079",
+              "name": "app_token",
+              "value": "VrjBb09mZaZauLsFdRrcqTSsnVe",
+              "type": "string"
+            },
+            {
+              "id": "ef938e36-d7ea-4613-add0-f05950fe1ed6",
+              "name": "table_id",
+              "value": "tbl75OvZpQtdLABJ",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        -80
+      ],
+      "id": "d11d6932-7717-4c11-8146-eadd3bc6e8a7",
+      "name": "设置应用凭证",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"topHead\": [\n    {\n      \"record_id\": \"记录ID\",\n      \"id\": \"选题ID\",\n      \"title\": \"选题标题\",\n      \"source_link\": \"原始链接\",\n      \"summary\": \"摘要\",\n      \"final_score\": 87,\n      \"rank_score\": 132.5,\n      \"factor_scores\": {\n        \"relevance\": 25,\n        \"timeliness\": 23,\n        \"depth\": 15,\n        \"impact\": 22\n      },\n      \"primary_track\": \"多模态/视觉/语音\",\n      \"execution_slot\": \"必做主线\",\n      \"competition_level\": \"中\",\n      \"monetization_potential\": \"高\",\n      \"freshness_hours\": 5.3,\n      \"urgent_alert\": true,\n      \"allocation_reason\": \"综合分87(必做级) + 影响力22(高) + 超新鲜(5.3h) + 紧急预警\",\n      \"execution_strategy\": \"抢占先发优势策略。响应时间: 2小时内完成初稿；资源配置: 主编+资深编辑；内容方向: 独家深度解读,建立话题权威；字数要求: 3000+字深度稿；差异化方向: 四大核心技术拆解 + 性能对比 + 产业影响分析 + 国产芯片适配价值\",\n      \"monetization_path\": \"企业咨询(视频生成加速方案) + 技术培训(TurboDiffusion实战课程) + 付费报告(国产AI芯片视频生成白皮书)\",\n      \"seo_keywords\": [\"TurboDiffusion\", \"清华视频生成\", \"RTX 5090\", \"生数科技\"],\n      \"competition_strategy\": \"竞争度中,需做差异化: 避免纯复述官方稿,重点做技术原理图解+性能实测对比\"\n    }\n  ],\n\n  \"topQuick\": [\n    {\n      \"record_id\": \"记录ID\",\n      \"id\": \"选题ID\",\n      \"title\": \"选题标题\",\n      \"source_link\": \"原始链接\",\n      \"summary\": \"摘要\",\n      \"final_score\": 68,\n      \"rank_score\": 85.2,\n      \"factor_scores\": {\n        \"relevance\": 22,\n        \"timeliness\": 24,\n        \"depth\": 10,\n        \"impact\": 18\n      },\n      \"primary_track\": \"大模型/基础模型\",\n      \"freshness_hours\": 3.2,\n      \"allocation_reason\": \"时效性极高(24分) + 超新鲜(3.2h) + 竞争度低\",\n      \"execution_strategy\": \"快讯策略；响应时间: 当日完成；资源配置: 常规编辑；字数要求: 500-800字；内容方向: 事实陈述 + 背景补充\",\n      \"competition_strategy\": \"竞争度低,抢占首发,简洁陈述事实即可\"\n    }\n  ],\n\n  \"topDeep\": [\n    {\n      \"record_id\": \"记录ID\",\n      \"id\": \"选题ID\",\n      \"title\": \"选题标题\",\n      \"source_link\": \"原始链接\",\n      \"summary\": \"摘要\",\n      \"final_score\": 72,\n      \"rank_score\": 88.0,\n      \"factor_scores\": {\n        \"relevance\": 20,\n        \"timeliness\": 10,\n        \"depth\": 25,\n        \"impact\": 19\n      },\n      \"primary_track\": \"Agent/自动化\",\n      \"allocation_reason\": \"深度极高(25分) + 影响力19(高) + 学术价值高\",\n      \"execution_strategy\": \"深度稿策略；响应时间: 本周完成；资源配置: 资深技术编辑；字数要求: 3000+字；内容方向: 技术原理拆解 + 实验对比 + 代码示例 + 应用场景分析\",\n      \"monetization_path\": \"技术培训课程引流 + 企业咨询\"\n    }\n  ],\n  \n  \"stats\": {\n    \"total\": 10,\n    \"processed\": 10,\n    \"head_count\": 3,\n    \"quick_count\": 5,\n    \"deep_count\": 1,\n    \"urgent_count\": 1,\n    \"track_distribution\": {\n      \"大模型/基础模型\": 2,\n      \"Agent/自动化\": 4,\n      \"多模态/视觉/语音\": 1,\n      \"算力/芯片\": 4,\n      \"云/基础设施\": 3,\n      \"机器人/自动驾驶\": 2,\n      \"AI治理/政策\": 3,\n      \"论文/科研\": 1,\n      \"综合AI资讯\": 4\n    },\n    \"source_distribution\": {\n      \"量子位\": 4,\n      \"机器之心\": 3,\n      \"新智元\": 3,\n      \"官方博客\": 2,\n      \"学术机构\": 1\n    },\n    \"competition_stats\": {\n      \"低\": 3,\n      \"中\": 5,\n      \"高\": 2\n    },\n    \"monetization_stats\": {\n      \"低\": 4,\n      \"中\": 3,\n      \"高\": 3\n    }\n  },\n\n  \"recommendations\": [\n    \"🚨 今日1条紧急预警选题(TurboDiffusion),建议2小时内响应\",\n    \"💰 3条高变现潜力选题,重点嵌入商业化元素(咨询/培训/报告)\",\n    \"⚠️ 2条高竞争度选题,必须做差异化深度,避免快讯跟风\",\n    \"📊 赛道分布: 大模型占40%,建议关注多模态/Agent等其他赛道\"\n  ]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        976,
+        32
+      ],
+      "id": "3c3f0669-11cb-4fc1-9d82-aef7eaac6a66",
+      "name": "强制格式化输出 ",
+      "notesInFlow": true,
+      "notes": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n\n// 获取所有输入项\nconst items = $input.all();\n// 提取第一项中的数据列表\nconst list = items[0].json.data.items;\n\n// 遍历列表，为每个选题计算综合排名得分\nconst processedList = list.map(row => {\n  // 获取发布时间的毫秒时间戳\n  const pubMillis = row.fields[\"发布时间\"]; // 毫秒时间戳\n\n  // ===== 计算新鲜度（小时，保留两位小数）=====\n  const freshnessHours =\n    ($now.toMillis() - pubMillis) / (1000 * 60 * 60);\n  const freshnessHoursRounded = Number(freshnessHours.toFixed(1));\n\n  // ===== 1. 执行槽位权重 =====\n  const slot = row.fields[\"执行槽位\"]; // \"必做主线\" / \"高优先\" / \"中优先\" / \"观察\"\n  let slotWeight = 0;\n  if (slot === \"必做主线\") slotWeight = 20;\n  else if (slot === \"高优先\") slotWeight = 15;\n  else if (slot === \"中优先\") slotWeight = 8;\n  else slotWeight = 0;\n\n  // ===== 2. 新鲜度加分 =====\n  let freshnessBonus = 0;\n  if (freshnessHoursRounded <= 6) {\n    freshnessBonus = 10;\n  } else if (freshnessHoursRounded <= 24) {\n    freshnessBonus = 5;\n  } else {\n    freshnessBonus = 0;\n  }\n\n  // ===== 3. 紧急预警加分 =====\n  const urgentFlag = row.fields[\"紧急预警标记\"];\n  const urgentBool = urgentFlag === true;\n  const urgentBonus = urgentBool ? 15 : 0;\n\n  // ===== 4. 影响力加权 =====\n  const influenceScore = Number(row.fields[\"影响力重要性得分\"] || 0);\n  const influenceWeighted = influenceScore * 0.5;\n\n  // ===== 5. 人工优先级加分 =====\n  const manualAdjust = row.fields[\"人工优先级修正\"]; // \"手动提升\" / \"手动降低\" / \"不改\"\n  let manualBonus = 0;\n  if (manualAdjust === \"手动提升\") manualBonus = 25;\n  else if (manualAdjust === \"手动降低\") manualBonus = -25;\n  else manualBonus = 0;\n\n  // ===== 6. 计算最终排名得分 =====\n  const baseScore = Number(row.fields[\"最终热度得分\"] || 0);\n  const rankScore =\n    baseScore +\n    slotWeight +\n    freshnessBonus +\n    urgentBonus +\n    influenceWeighted +\n    manualBonus;\n\n  // ===== 7. 生成原因片段 =====\n  const reasonSnippets = [];\n\n  // 最终热度得分 / 综合分\n  if (baseScore >= 85) {\n    reasonSnippets.push(\"综合分极高\");\n  } else if (baseScore >= 75) {\n    reasonSnippets.push(`综合分${baseScore}(必做级)`);\n  } else if (baseScore >= 60) {\n    reasonSnippets.push(`综合分${baseScore}(高)`);\n  }\n\n  // 影响力重要性得分\n  if (influenceScore >= 20) {\n    reasonSnippets.push(\"影响力极高\");\n  } else if (influenceScore >= 18) {\n    reasonSnippets.push(`影响力${influenceScore}(高)`);\n  }\n\n  // 领域相关度得分\n  const relevanceScore = Number(row.fields[\"领域相关度得分\"] || 0);\n  if (relevanceScore === 25) {\n    reasonSnippets.push(\"相关度满分\");\n  } else if (relevanceScore >= 20) {\n    reasonSnippets.push(\"相关度高\");\n  }\n\n  // 新鲜度（小时）\n  if (freshnessHoursRounded <= 6) {\n    reasonSnippets.push(`超新鲜(${freshnessHoursRounded.toFixed(1)}h)`);\n  } else if (freshnessHoursRounded <= 24) {\n    reasonSnippets.push(`新鲜(${freshnessHoursRounded.toFixed(1)}h)`);\n  }\n\n  // 紧急预警\n  if (urgentBool) {\n    reasonSnippets.push(\"紧急预警\");\n  }\n\n  // 人工优先级修正\n  if (manualAdjust === \"手动提升\") {\n    reasonSnippets.push(\"人工提升\");\n  }\n\n  // 返回处理后的选题对象\n  return {\n    记录ID: row.record_id,\n    选题ID: row.fields[\"选题ID\"],\n    标题: row.fields[\"标题\"][0].text,\n    摘要: row.fields[\"摘要\"][0].text,\n    最终热度得分: baseScore,\n    领域相关度得分: relevanceScore,\n    时效性热点程度得分: row.fields[\"时效性热点程度得分\"],\n    深度新颖性得分: row.fields[\"深度新颖性得分\"],\n    影响力重要性得分: influenceScore,\n    一级赛道: row.fields[\"一级赛道\"],\n    内容类型: row.fields[\"内容类型\"],\n    执行槽位: slot,\n    竞争度: row.fields[\"竞争度\"],\n    变现潜力: row.fields[\"变现潜力\"],\n    紧急预警标记: urgentFlag,\n    发布时间: DateTime.fromMillis(pubMillis).toFormat('yyyy/MM/dd HH:mm:ss'),\n    新鲜度: freshnessHoursRounded,\n    来源名称: row.fields[\"来源名称\"][0].text,\n    来源类型: row.fields[\"来源类型\"],\n    原始链接: row.fields[\"原始链接\"].link,\n    人工优先级修正: manualAdjust,\n    排序综合得分: rankScore,\n    原因片段: reasonSnippets\n  };\n});\n\n// 返回包含所有处理结果的数组\nreturn [\n  {\n    json: {\n      allResults: processedList,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        -80
+      ],
+      "id": "55f2910f-1fea-4b5a-9f1e-65b4e97e5066",
+      "name": "清洗数据",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "deepseek-v3.2",
+          "mode": "list",
+          "cachedResultName": "deepseek-v3.2"
+        },
+        "options": {
+          "frequencyPenalty": 0,
+          "responseFormat": "json_object",
+          "temperature": 0.7,
+          "timeout": 300000,
+          "maxRetries": 2,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        768,
+        16
+      ],
+      "id": "bf678fd0-5590-4b69-8cc2-a615e683db04",
+      "name": "deepseek-v3.2",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "KcHzWF39O8ZtiGQr",
+          "name": "OpenAi account"
+        }
+      },
+      "notes": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "deepseek-v3.2",
+          "mode": "list",
+          "cachedResultName": "deepseek-v3.2"
+        },
+        "options": {
+          "frequencyPenalty": 0,
+          "responseFormat": "json_object",
+          "temperature": 0.7,
+          "timeout": 300000,
+          "maxRetries": 2,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        592,
+        16
+      ],
+      "id": "a9c6b5da-baf2-40cc-b5a9-81239b58c281",
+      "name": "deepseek-v3.2 ",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "KcHzWF39O8ZtiGQr",
+          "name": "OpenAi account"
+        }
+      },
+      "notes": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n\nconst inputData = $input.all();\nconst feishuMessage = inputData[0].json;\n\n// 提取post.zh_cn的完整对象\nconst postZhCn = {\n    zh_cn: feishuMessage.content.post.zh_cn\n};\n\n// 转义函数\nfunction escapeForFeishu(obj) {\n    // 先转为标准JSON字符串(压缩格式)\n    let jsonStr = JSON.stringify(obj);\n    \n    // 再次stringify并去掉最外层引号,实现转义\n    let escapedStr = JSON.stringify(jsonStr);\n    escapedStr = escapedStr.slice(1, -1);\n    \n    return escapedStr;\n}\n\n// 对内容进行转义\nconst escapedContent = escapeForFeishu(postZhCn);\n\n// 构建最终输出\nconst result = {\n    msg_type: \"post\",\n    content: escapedContent\n};\n\nreturn { json: result };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        -144
+      ],
+      "id": "f148151b-c2ef-47bd-90e1-676f80f9ed64",
+      "name": "压缩一行并转义",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================\n// n8n Code节点 - 飞书富文本消息生成器\n// 功能:将AI资讯分析结果转换为飞书富文本格式\n// ============================================\n\n// Author:@南哥AGI研习社 (B站 or YouTube 搜索\"南哥AGI研习社\")\n\n// 获取n8n工作流中传入的所有输入数据\nconst inputData = $input.all();\n// 提取第一个输入项的JSON数据\nconst data = inputData[0].json;\n\n// ============================================\n// 数据提取部分\n// ============================================\n\n// 从输入数据中提取output对象\nconst output = data.output;\n// 提取必做主线选题数组，如果不存在则使用空数组\nconst topHead = output.topHead || [];\n// 提取快讯池选题数组，如果不存在则使用空数组\nconst topQuick = output.topQuick || [];\n// 提取深度池选题数组，如果不存在则使用空数组\nconst topDeep = output.topDeep || [];\n// 提取统计数据对象，如果不存在则使用空对象\nconst stats = output.stats || {};\n// 提取智能建议数组，如果不存在则使用空数组\nconst recommendations = output.recommendations || [];\n\n// ============================================\n// 初始化富文本内容数组\n// 每个元素都是一个段落，段落内可包含多个文本块\n// ============================================\nconst content = [];\n\n// ============================================\n// 报告标题区域\n// ============================================\n\n// 添加报告主标题（加粗样式，包含日期和时间）\nconst formattedDateTime = $now.toFormat('yyyy/MM/dd HH:mm:ss');\ncontent.push([\n  { tag: \"text\", text: `📊 AI智能决策每日清单(${formattedDateTime})\\n`, style: [\"bold\"] }\n]);\n\n// 添加装饰性分隔线\ncontent.push([\n  { tag: \"text\", text: \"━━━━━━━━━━━━━━━━━━━━\\n\" }\n]);\n\n// ============================================\n// 数据概览部分\n// ============================================\n\n// 添加数据概览标题（加粗样式）\ncontent.push([\n  { tag: \"text\", text: \"📈 数据概览\\n\", style: [\"bold\"] }\n]);\n// 添加第一行统计数据：总数、已处理数、紧急数量\ncontent.push([\n  { tag: \"text\", text: `总计: ${stats.total} | 已处理: ${stats.processed} | 紧急: ${stats.urgent_count}\\n` }\n]);\n// 添加第二行统计数据：主线数、快讯数、深度数，末尾加两个换行符增加间距\ncontent.push([\n  { tag: \"text\", text: `主线: ${stats.head_count} | 快讯: ${stats.quick_count} | 深度: ${stats.deep_count}\\n\\n` }\n]);\n\n// ============================================\n// 必做主线（紧急）部分\n// ============================================\n\n// 判断是否有必做主线选题\nif (topHead.length > 0) {\n  // 添加必做主线板块标题（加粗样式）\n  content.push([\n    { tag: \"text\", text: \"🚨 必做主线（紧急）\\n\", style: [\"bold\"] }\n  ]);\n  // 添加装饰性分隔线\n  content.push([\n    { tag: \"text\", text: \"━━━━━━━━━━━━━━━━━━━━\\n\" }\n  ]);\n  \n  // 遍历每个必做主线选题\n  topHead.forEach((item, index) => {\n    // 添加选题标题（序号 + 标题，加粗样式）\n    content.push([\n      { tag: \"text\", text: `${index + 1}. ${item.title}\\n`, style: [\"bold\"] }\n    ]);\n    \n    // 添加摘要\n    if (item.summary) {\n      content.push([\n        { tag: \"text\", text: `   📄 摘要: ${item.summary}\\n` }\n      ]);\n    }\n    \n    // 添加原始链接\n    if (item.source_link) {\n      content.push([\n        { tag: \"text\", text: \"   🔗 原文链接: \" },\n        { tag: \"a\", text: \"点击查看\", href: item.source_link },\n        { tag: \"text\", text: \"\\n\" }\n      ]);\n    }\n    \n    // 添加评分信息：综合评分和排名分\n    content.push([\n      { tag: \"text\", text: `   📌 综合评分: ${item.final_score} | 排名分: ${item.rank_score}\\n` }\n    ]);\n    // 添加赛道和执行槽信息\n    content.push([\n      { tag: \"text\", text: `   🎯 赛道: ${item.primary_track} | 执行槽: ${item.execution_slot}\\n` }\n    ]);\n    // 添加新鲜度、竞争程度、变现潜力信息\n    content.push([\n      { tag: \"text\", text: `   ⏰ 新鲜度: ${item.freshness_hours}小时 | 竞争: ${item.competition_level} | 变现: ${item.monetization_potential}\\n` }\n    ]);\n    \n    // 如果存在紧急警告，则添加分配原因（加粗样式强调）\n    if (item.urgent_alert) {\n      content.push([\n        { tag: \"text\", text: `   ⚠️ ${item.allocation_reason}\\n`, style: [\"bold\"] }\n      ]);\n    }\n    \n    // 添加执行策略建议\n    content.push([\n      { tag: \"text\", text: `   💡 策略: ${item.execution_strategy}\\n` }\n    ]);\n    \n    // 如果存在变现路径，则添加变现路径信息\n    if (item.monetization_path) {\n      content.push([\n        { tag: \"text\", text: `   💰 变现路径: ${item.monetization_path}\\n` }\n      ]);\n    }\n    \n    // 如果存在SEO关键词且不为空数组，则添加关键词列表\n    if (item.seo_keywords && item.seo_keywords.length > 0) {\n      content.push([\n        { tag: \"text\", text: `   🔍 SEO关键词: ${item.seo_keywords.join(', ')}\\n` }\n      ]);\n    }\n    \n    // 添加竞争策略，末尾加两个换行符作为选题间隔\n    content.push([\n      { tag: \"text\", text: `   ⚔️ 竞争策略: ${item.competition_strategy}\\n\\n` }\n    ]);\n  });\n}\n\n// ============================================\n// 快讯池选题部分\n// ============================================\n\n// 判断是否有快讯池选题\nif (topQuick.length > 0) {\n  // 添加快讯池板块标题（加粗样式）\n  content.push([\n    { tag: \"text\", text: \"⚡ 快讯池选题\\n\", style: [\"bold\"] }\n  ]);\n  // 添加装饰性分隔线\n  content.push([\n    { tag: \"text\", text: \"━━━━━━━━━━━━━━━━━━━━\\n\" }\n  ]);\n  \n  // 遍历每个快讯池选题\n  topQuick.forEach((item, index) => {\n    // 添加选题标题（序号 + 标题，加粗样式）\n    content.push([\n      { tag: \"text\", text: `${index + 1}. ${item.title}\\n`, style: [\"bold\"] }\n    ]);\n    \n    // 添加摘要\n    if (item.summary) {\n      content.push([\n        { tag: \"text\", text: `   📄 摘要: ${item.summary}\\n` }\n      ]);\n    }\n    \n    // 添加原始链接\n    if (item.source_link) {\n      content.push([\n        { tag: \"text\", text: \"   🔗 原文链接: \" },\n        { tag: \"a\", text: \"点击查看\", href: item.source_link },\n        { tag: \"text\", text: \"\\n\" }\n      ]);\n    }\n    \n    // 添加评分信息\n    content.push([\n      { tag: \"text\", text: `   📌 综合评分: ${item.final_score} | 排名分: ${item.rank_score}\\n` }\n    ]);\n    // 添加赛道信息\n    content.push([\n      { tag: \"text\", text: `   🎯 赛道: ${item.primary_track}\\n` }\n    ]);\n    // 添加新鲜度信息\n    content.push([\n      { tag: \"text\", text: `   ⏰ 新鲜度: ${item.freshness_hours}小时\\n` }\n    ]);\n    // 添加分配原因\n    content.push([\n      { tag: \"text\", text: `   📝 ${item.allocation_reason}\\n` }\n    ]);\n    // 添加执行策略\n    content.push([\n      { tag: \"text\", text: `   💡 策略: ${item.execution_strategy}\\n` }\n    ]);\n    // 添加竞争策略，末尾加两个换行符作为选题间隔\n    content.push([\n      { tag: \"text\", text: `   ⚔️ ${item.competition_strategy}\\n\\n` }\n    ]);\n  });\n}\n\n// ============================================\n// 深度池选题部分\n// ============================================\n\n// 判断是否有深度池选题\nif (topDeep.length > 0) {\n  // 添加深度池板块标题（加粗样式）\n  content.push([\n    { tag: \"text\", text: \"📖 深度池选题\\n\", style: [\"bold\"] }\n  ]);\n  // 添加装饰性分隔线\n  content.push([\n    { tag: \"text\", text: \"━━━━━━━━━━━━━━━━━━━━\\n\" }\n  ]);\n  \n  // 遍历每个深度池选题\n  topDeep.forEach((item, index) => {\n    // 添加选题标题（序号 + 标题，加粗样式）\n    content.push([\n      { tag: \"text\", text: `${index + 1}. ${item.title}\\n`, style: [\"bold\"] }\n    ]);\n    \n    // 添加摘要\n    if (item.summary) {\n      content.push([\n        { tag: \"text\", text: `   📄 摘要: ${item.summary}\\n` }\n      ]);\n    }\n    \n    // 添加原始链接\n    if (item.source_link) {\n      content.push([\n        { tag: \"text\", text: \"   🔗 原文链接: \" },\n        { tag: \"a\", text: \"点击查看\", href: item.source_link },\n        { tag: \"text\", text: \"\\n\" }\n      ]);\n    }\n    \n    // 添加评分信息\n    content.push([\n      { tag: \"text\", text: `   📌 综合评分: ${item.final_score} | 排名分: ${item.rank_score}\\n` }\n    ]);\n    // 添加赛道信息\n    content.push([\n      { tag: \"text\", text: `   🎯 赛道: ${item.primary_track}\\n` }\n    ]);\n    // 添加分配原因\n    content.push([\n      { tag: \"text\", text: `   📝 ${item.allocation_reason}\\n` }\n    ]);\n    // 添加执行策略\n    content.push([\n      { tag: \"text\", text: `   💡 策略: ${item.execution_strategy}\\n` }\n    ]);\n    \n    // 如果存在变现路径，添加变现路径并加两个换行符；否则只加一个换行符\n    if (item.monetization_path) {\n      content.push([\n        { tag: \"text\", text: `   💰 变现路径: ${item.monetization_path}\\n\\n` }\n      ]);\n    } else {\n      content.push([\n        { tag: \"text\", text: \"\\n\" }\n      ]);\n    }\n  });\n}\n\n// ============================================\n// 赛道分布统计部分\n// ============================================\n\n// 判断是否存在赛道分布数据\nif (stats.track_distribution) {\n  // 添加赛道分布板块标题（加粗样式）\n  content.push([\n    { tag: \"text\", text: \"🎨 赛道分布\\n\", style: [\"bold\"] }\n  ]);\n  // 添加装饰性分隔线\n  content.push([\n    { tag: \"text\", text: \"━━━━━━━━━━━━━━━━━━━━\\n\" }\n  ]);\n  \n  // 遍历赛道分布对象的每个键值对\n  for (const [track, count] of Object.entries(stats.track_distribution)) {\n    // 只显示数量大于0的赛道\n    if (count > 0) {\n      content.push([\n        { tag: \"text\", text: `   ${track}: ${count}篇\\n` }\n      ]);\n    }\n  }\n  // 赛道分布后添加一个空行\n  content.push([{ tag: \"text\", text: \"\\n\" }]);\n}\n\n// ============================================\n// 智能建议部分\n// ============================================\n\n// 判断是否有智能建议\nif (recommendations.length > 0) {\n  // 添加智能建议板块标题(加粗样式)\n  content.push([\n    { tag: \"text\", text: \"💡 智能建议\\n\", style: [\"bold\"] }\n  ]);\n  // 添加装饰性分隔线\n  content.push([\n    { tag: \"text\", text: \"━━━━━━━━━━━━━━━━━━━━\\n\" }\n  ]);\n  \n  // 遍历每条智能建议\n  recommendations.forEach((rec, index) => {\n    // 添加建议内容\n    content.push([\n      { tag: \"text\", text: `${rec}\\n` }\n    ]);\n  });\n}\n\n// ============================================\n// 添加系统链接\n// ============================================\n\n// 添加装饰性分隔线\ncontent.push([\n  { tag: \"text\", text: \"\\n━━━━━━━━━━━━━━━━━━━━\\n\" }\n]);\n\n// 添加系统链接\ncontent.push([\n  { tag: \"text\", text: \"🔗 \" },\n  { tag: \"a\", text: \"点击进入系统查看详情\", href: \"https://mcn33lfbwjgi.feishu.cn/base/VrjBb09mZaZauLsFdRrcqTSsnVe?table=tbl75OvZpQtdLABJ&view=vewKCwXwPg\" },\n  { tag: \"text\", text: \"\\n\" }\n]);\n\n// ============================================\n// 构建飞书消息对象\n// ============================================\n\n// 构建符合飞书API规范的富文本消息对象\nconst feishuMessage = {\n  // 消息类型:富文本\n  msg_type: \"post\",\n  // 消息内容\n  content: {\n    // 富文本内容\n    post: {\n      // 简体中文版本\n      zh_cn: {\n        // 消息标题\n        title: \"🤖 智能化选题评审与决策支持平台\",\n        // 消息正文内容(之前构建的content数组)\n        content: content\n      }\n    }\n  }\n};\n\n// ============================================\n// 返回结果\n// ============================================\n\n// 将构建好的飞书消息对象作为JSON返回给n8n工作流的下一个节点\nreturn { json: feishuMessage };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        -144
+      ],
+      "id": "1e9a79ef-9963-4d34-add7-0e30eb5b6677",
+      "name": "飞书富文本消息生成",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/im/v1/messages",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "receive_id_type",
+              "value": "chat_id"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').first().json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"receive_id\":\"oc_9619619c722d54d1b6589f7405855d59\",\n  \"msg_type\": {{ $json.msg_type.toJsonString() }},\n  \"content\": \"{{ $json.content }}\"\n} \n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1712,
+        -144
+      ],
+      "id": "3a87a258-3924-48a3-88f6-e0a3ed659cdc",
+      "name": "发送即时消息",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "content": "## 获取选题\n- 按照预定策略获取选题（如获取当日发布的选题）\n- 对获取到选题进行数据清洗",
+        "height": 480,
+        "width": 912,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "2fa52115-2140-488b-8320-48a4eb3adaca",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## AI每日选题智能决策\n- AI进行选题决策\n- 并输出结构化选题清单",
+        "height": 480,
+        "width": 736,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        512,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "63dcd05d-7b5e-436f-835b-c34666fe0e63",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 推送选题清单\n- 将结构化选题清单处理为富文本消息并推送至飞书群\n- 将每日选题清单进行数据清洗后更新选题池类型",
+        "height": 480,
+        "width": 656,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1264,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "7d6f9d66-c441-445e-a840-b40e85d99a7b",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $('设置应用凭证').item.json.app_token }}/tables/{{ $('设置应用凭证').item.json.table_id }}/records/search ",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id_type",
+              "value": "open_id"
+            },
+            {
+              "name": "page_token"
+            },
+            {
+              "name": "page_size",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"sort\": [\n    {\n      \"field_name\": \"选题ID\",\n      \"desc\": false\n    }\n  ],\n  \"filter\": {\n    \"conjunction\": \"and\",\n    \"conditions\": [\n      {\n        \"field_name\": \"发布时间\",\n        \"operator\": \"is\",\n        \"value\": [\n          \"Today\"\n        ]\n      },\n      {\n        \"field_name\": \"状态\",\n        \"operator\": \"is\",\n        \"value\": [\n          \"待创作\"\n        ]\n      }\n    ]\n  },\n  \"automatic_fields\": false\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        192,
+        -80
+      ],
+      "id": "65e6b5d6-ea3c-4812-8dae-6884bcc2e3c0",
+      "name": "获取当日发布记录",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=提供的选题数据是：## {{ $json.allResults.toJsonString() }} ##",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=# 角色：AI 科技媒体选题分配专家\n你是一名专业的 **AI 科技媒体选题分配专家**，服务的账号类似“量子位”的科技媒体。\n\n## 背景\n- 持续追踪全球人工智能与前沿科技的新趋势\n- 重点覆盖：大模型（LLM / 基础模型）、Agent、多模态、基础设施（算力、芯片、云）、AI 在各行业落地案例、重要论文与科研成果、产业动向、监管与政策变动\n- 受众是关注 AI 行业、科技创新、创业与投资的专业读者\n\n## 简介\n- author: 南哥AGI研习社(B站、YouTube)\n- version: 1.1\n- language: 中文\n- description: 一名专业的 **AI 科技媒体选题分配专家**，持续追踪全球人工智能与前沿科技的新趋势。\n\n## 任务\n你会收到一个 JSON 数组,每个对象代表一条待分配的选题，你需要将每日选题智能分配到以下三个执行池:\n1. **头版候选池** - 2小时内响应的重大选题\n2. **快讯池** - 当日完成的时效性选题\n3. **深度稿池** - 本周完成的深度报道选题\n\n## 分配规则(必须严格遵守)\n\n### 核心原则\n1. **互斥性原则**: 每条选题只能进入一个池,按优先级分配: **头版 > 快讯 > 深度**\n2. **多样性原则**: 同一赛道在各池中的数量受限,避免单一赛道霸榜\n3. **新鲜度原则**: 根据\"新鲜度\"字段得到距今小时数,超过窗口期的选题自动降级\n4. **人工优先级**: 若\"人工优先级修正\"字段 = \"手动提升\"或\"手动降低\",优先执行人工决策\n\n### 头版候选池 (2小时内响应)\n#### 准入条件 (必须同时满足)\n- 最终热度得分 ≥ 75\n- 影响力重要性得分 ≥ 18\n- 领域相关度得分 ≥ 15\n- 新鲜度 ≤ 24 小时\n- 排除: 已进入头版的选题\n\n#### 数量限制\n- 最多 **3 条**\n- 同一赛道最多 **2 条**\n\n#### 优先级排序(按以下因素综合排序)\n1. **紧急预警标记** = true 的选题优先\n2. **人工优先级修正** = \"手动提升\" 的选题优先\n3. **最终热度得分**高的优先\n4. **影响力重要性得分**高的优先\n5. **新鲜度**高的优先(距发布时间越短越优先)\n6. **执行槽位** = \"必做主线\" 的优先\n\n### 快讯池 (当日完成)\n#### 准入条件 (必须同时满足)\n- 时效性热点程度得分 ≥ 18\n- 最终热度得分 ≥ 50\n- 新鲜度 ≤ 12 小时\n- 排除: 已进入头版候选池的选题\n\n#### 数量限制\n- 最多 **5 条**\n- 同一赛道最多 **3 条**\n\n#### 优先级排序\n1. **距发布时间越短**越优先(超新鲜优先)\n2. **时效性热点程度得分**高的优先\n3. **竞争度** = \"低\" 的优先(独家信息)\n4. **来源类型** = \"官方博客\" 的优先(一手信息)\n\n### 深度稿池 (本周完成)\n#### 准入条件 (必须同时满足)\n- 深度新颖性得分 ≥ 18\n- 影响力重要性得分 ≥ 15\n- 最终热度得分 ≥ 60\n- 排除: 已进入头版候选池或快讯池的选题\n\n#### 数量限制\n- 最多 **3 条**\n- 同一赛道最多 **2 条**\n\n#### 优先级排序\n1. **深度新颖性得分**高的优先\n2. **影响力重要性得分**高的优先\n3. **变现潜力** = \"高\" 的优先\n4. **内容类型** = \"技术拆解\" 或 \"深度报道\" 的优先\n\n## 分配原因生成逻辑\n\n为每条选题生成 `allocation_reason` 字段,说明为什么分配到该池:\n\n```\n# 示例模板\nallocation_reason = \"综合分87(必做级) + 影响力22(高) + 超新鲜(5.3h) + 紧急预警\"\n\n# 构造规则\n原因片段 = 根据\"原因片段\"字段得到\n\nallocation_reason = \" + \".join(原因片段)\n```\n\n## 输出字段详细说明\n\n请严格按照 JSON 格式输出分配结果     \n\n### 必填字段(所有池通用)\n\n| 字段名                 | 类型 | 说明                                     |\n|---------------------|------|----------------------------------------|\n| `record_id`         | string | 记录ID                                   |\n| `id`                | string | 选题ID                                   |\n| `title`             | string | 选题标题                                   |\n| `source_link`       | string | 原始链接                                   |\n| `summary`           | string | 摘要                                     |\n| `final_score`       | number | 最终热度得分(0-100)                          |\n| `rank_score`        | number | 排序综合得分                                 |\n| `factor_scores`     | object | {relevance, timeliness, depth, impact} |\n| `primary_track`     | string | 一级赛道                                   |\n| `allocation_reason` | string | 分配原因说明                                 |\n\n### 头版/快讯/深度池额外必填字段\n\n| 字段名 | 类型 | 说明 |\n|--------|------|------|\n| `execution_strategy` | string | 执行策略(包含响应时间/资源配置/内容方向/字数要求/差异化方向) |\n| `competition_strategy` | string | 竞争应对策略(可选,高竞争度选题必填) |\n\n### 高变现潜力选题额外必填字段\n\n| 字段名 | 类型 | 说明 |\n|--------|------|------|\n| `monetization_path` | string | 具体变现路径(企业咨询/技术培训/付费报告/工具推荐等) |\n\n### 头版池额外必填字段\n\n| 字段名 | 类型 | 说明             |\n|--------|------|----------------|\n| `freshness_hours` | number | 新鲜度            |\n| `seo_keywords` | array | SEO关键词数组(3-5个) |\n\n## 特殊处理规则\n\n### 1. 赛道多样性控制\n- 头版池中,若已有 **2 条\"大模型/基础模型\"**赛道选题,第 3 条\"大模型\"选题即使分数够高也**不进入头版**\n- 优先保证赛道多样性,避免单一话题刷屏\n- 若确需突破限制(如 OpenAI + Google 同日发布重大模型),在 `allocation_reason` 中说明理由\n\n### 2. 竞争度应对策略\n根据\"竞争度\"字段,在 `execution_strategy` 或 `competition_strategy` 中给出建议:\n\n| 竞争度 | 策略建议 |\n|--------|---------|\n| **低** | \"竞争度低,抢占首发,快速发布建立权威\" |\n| **中** | \"竞争度中,需做差异化: 技术拆解/性能对比/独家采访\" |\n| **高** | \"竞争度高,全网已刷屏,必须做极致差异化深度,否则建议降级或放弃\" |\n\n### 3. 变现潜力嵌入\n根据\"变现潜力\"字段,提供具体变现路径:\n\n| 变现潜力 | 必须包含的内容 |\n|---------|---------------|\n| **高** | 必须在 `monetization_path` 中给出 **3 种以上**具体路径 |\n| **中** | 给出 **1-2 种**变现建议 |\n| **低** | 可不提及变现,或仅标注\"广告收入为主\" |\n\n### 4. 人工优先级强制执行\n- 若\"人工优先级修正\" = **\"手动提升\"**:\n  - rank_score 自动 **+25 分**\n  - 在 `allocation_reason` 中标注\"人工提升\"\n  - 优先分配到头版池(即使不完全满足准入条件)\n\n- 若\"人工优先级修正\" = **\"手动降低\"**:\n  - rank_score 自动 **-25 分**\n  - 在 `allocation_reason` 中标注\"人工降低\"\n  - 可直接丢弃\n\n### 5. 紧急预警特殊处理\n- 若\"紧急预警标记\" = **true**:\n  - 必须进入**头版池**或**快讯池**\n  - 在 `recommendations` 中单独标注紧急事项\n\n### 6. 时间窗口硬限制\n\n| 池类型 | 时间窗口 | 超时处理 |\n|--------|---------|---------|\n| 头版 | ≤ 24 小时 | 超过24h但 < 48h,可降级到深度池 |\n| 快讯 | ≤ 12 小时 | 超过12h,不得进入快讯池 |\n| 深度 | 无限制 | 允许非时效性内容 |\n\n## 输出质量检查清单\n\n在返回 JSON 前,请自查以下内容:\n\n- [ ] JSON 格式完全合法,可被解析\n- [ ] 每条选题只出现在一个池中(互斥性)\n- [ ] 头版池 ≤ 3 条,快讯池 ≤ 5 条,深度池 ≤ 3 条\n- [ ] 同一赛道在头版/深度池中 ≤ 2 条,快讯池中 ≤ 3 条\n- [ ] 所有选题都有 `allocation_reason`\n- [ ] 头版/快讯/深度池选题都有 `execution_strategy`\n- [ ] 高变现潜力选题都有 `monetization_path`\n- [ ] 头版池选题都有 `seo_keywords`\n- [ ] `stats` 统计信息完整准确\n- [ ] `recommendations` 至少包含 3-5 条编辑建议\n- [ ] 紧急预警选题已特殊处理(进入头版/快讯)\n\n## 注意事项\n1. **必须输出合法 JSON**,不要有任何解释文字或 Markdown 代码块包裹\n2. **严格遵守数量限制**: 头版≤3, 快讯≤5, 深度≤3\n3. **赛道多样性**: 同一赛道不得在头版/深度池中超过2条\n4. **互斥性**: 每条选题只能出现在一个池中\n\n## 初始化\n\n请按照格式【提供的选题数据是：##（这里填写需要进行分配的选题数据 []）##】提供选题数据进行分配。   \n",
+          "maxIterations": 10,
+          "returnIntermediateSteps": false,
+          "passthroughBinaryImages": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        768,
+        -208
+      ],
+      "id": "c3600e7e-ad3f-4165-b6c7-1f2a8d7ff3d7",
+      "name": "AI每日选题智能决策",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Author:@南哥AGI研习社 (B站 or YouTube 搜索\"南哥AGI研习社\")\n\n// 获取上一个节点的输出数据\nconst inputData = $input.all()[0].json.output;\n\n// 定义原始键名与中文名称的映射关系\nconst mapping = {\n  'topHead': '头版池',\n  'topQuick': '快讯池',\n  'topDeep': '深度池'\n};\n\nlet results = [];\n\n// 遍历映射关系\nfor (const [key, chineseName] of Object.entries(mapping)) {\n  const records = inputData[key];\n  \n  // 如果该分类下有数据且是数组，则提取 record_id\n  if (records && Array.isArray(records)) {\n    records.forEach(record => {\n      results.push({\n        json: {\n          record_id: record.record_id,\n          record_flag: chineseName // 使用对应的中文名称\n        }\n      });\n    });\n  }\n}\n\n// 返回符合 n8n 标准结构的数组\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        48
+      ],
+      "id": "7971257f-db99-478c-987b-86ac97db28d5",
+      "name": "每日选题清单数据清洗",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $('设置应用凭证').item.json.app_token }}/tables/{{ $('设置应用凭证').item.json.table_id }}/records/{{ $json.record_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"fields\": {\n    \"选题池类型\": {{ $json.record_flag.toJsonString() }}\n  }\n} ",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1712,
+        48
+      ],
+      "id": "aa56fd24-707b-4662-9c89-827b4dcefe6c",
+      "name": "更新记录 选题池类型",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -352,
+        48
+      ],
+      "id": "4ab3b80d-2b16-4975-a6bf-258a76eb0dbf",
+      "name": "每天18:30定时触发"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "设置应用凭证": {
+      "main": [
+        [
+          {
+            "node": "获取飞书token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "设置应用凭证",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取飞书token": {
+      "main": [
+        [
+          {
+            "node": "获取当日发布记录",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "强制格式化输出 ": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI每日选题智能决策",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "清洗数据": {
+      "main": [
+        [
+          {
+            "node": "AI每日选题智能决策",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deepseek-v3.2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "强制格式化输出 ",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI每日选题智能决策",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "deepseek-v3.2 ": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI每日选题智能决策",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "压缩一行并转义": {
+      "main": [
+        [
+          {
+            "node": "发送即时消息",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "飞书富文本消息生成": {
+      "main": [
+        [
+          {
+            "node": "压缩一行并转义",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取当日发布记录": {
+      "main": [
+        [
+          {
+            "node": "清洗数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI每日选题智能决策": {
+      "main": [
+        [
+          {
+            "node": "飞书富文本消息生成",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "每日选题清单数据清洗",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "每日选题清单数据清洗": {
+      "main": [
+        [
+          {
+            "node": "更新记录 选题池类型",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "83be63d1-db3b-4397-80ee-0d99f9a606b7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "830bfffc51ff88cd51b86a768f6a50a5b290896243e17b0bdf0f08551c38ba51"
+  },
+  "id": "KsKjvh6XuzTO7BUA",
+  "tags": [
+    {
+      "updatedAt": "2025-10-30T12:47:20.269Z",
+      "createdAt": "2025-10-30T12:47:20.269Z",
+      "id": "f21vDmcMsvedJbTO",
+      "name": "飞书"
+    },
+    {
+      "updatedAt": "2025-10-30T12:47:07.824Z",
+      "createdAt": "2025-10-30T12:47:07.824Z",
+      "id": "v4AgHa1VDiat8yLA",
+      "name": "AI"
+    }
+  ]
+}

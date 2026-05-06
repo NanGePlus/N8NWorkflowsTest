@@ -1,0 +1,535 @@
+{
+  "name": "【01_主工作流】AI智能选题评审工作流",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal/",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\":\"application/json; charset=utf-8\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"app_id\": {{ $json.app_id.toJsonString() }},\n    \"app_secret\": {{ $json.app_secret.toJsonString() }}\n} ",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2000,
+        -160
+      ],
+      "id": "ae60a1fb-27c4-4f79-886f-d97cb937d520",
+      "name": "获取飞书token",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1264,
+        -160
+      ],
+      "id": "c9397289-aeb6-4af1-908b-37ce7a8743f9",
+      "name": "循环处理",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2352,
+        -160
+      ],
+      "id": "f6d01900-3854-4969-979d-21f8a3a0f105",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        -272
+      ],
+      "id": "f496ca88-6afd-489c-b54d-a545984d0ea4",
+      "name": "合并最终数据统一处理",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Aggregate"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/im/v1/messages",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "receive_id_type",
+              "value": "chat_id"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"receive_id\":\"oc_9619619c722d54d1b6589f7405855d59\",\n    \"msg_type\": \"post\",\n    \"content\":\"{\\\"zh_cn\\\":{\\\"title\\\":\\\"选题进度\\\",\\\"content\\\":[[{\\\"tag\\\":\\\"at\\\",\\\"user_id\\\":\\\"\\\",\\\"user_name\\\":\\\"所有人\\\"}],[{\\\"tag\\\":\\\"md\\\",\\\"text\\\":\\\"**今天的选题已全部完成** \\\"}],[{\\\"tag\\\":\\\"a\\\",\\\"href\\\":\\\"https://mcn33lfbwjgi.feishu.cn/base/VrjBb09mZaZauLsFdRrcqTSsnVe?table=tbl75OvZpQtdLABJ&view=vewwbkXKn7\\\",\\\"text\\\":\\\"点击查看详情\\\"}]]}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -704,
+        -272
+      ],
+      "id": "92bd821f-3ce0-447f-b80a-97e11746a1f5",
+      "name": "向群组发送已完成消息",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad0fb75f-4bf4-4157-8641-07b6d87aa235",
+              "name": "app_id",
+              "value": "cli_a8759c6a213d500e",
+              "type": "string"
+            },
+            {
+              "id": "8211841d-8df6-413c-9518-6bd69380d327",
+              "name": "app_secret",
+              "value": "6bxgsxm5ETk0zcWmbGfyrfU6qZ21TZkx",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2176,
+        -160
+      ],
+      "id": "15a4e146-343a-4a3b-b884-0b0fe1dfb65d",
+      "name": "设置应用凭证",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "content": "## 获取RSS源列表\n- 设置飞书服务应用凭证并获取token\n- 指定具体访问哪一个飞书多维表格\n- 从RSS源多维表格中获取RSS源链接\n- 拆分多条RSS源链接分别读取数据",
+        "height": 608,
+        "width": 1056,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2416,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "328ad95c-d835-4117-bc15-f46260b0bc23",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $json.app_token }}/tables/{{ $json.table_id }}/records/search ",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id_type",
+              "value": "open_id"
+            },
+            {
+              "name": "page_token"
+            },
+            {
+              "name": "page_size",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"sort\": [\n    {\n      \"field_name\": \"源ID\",\n      \"desc\": false\n    }\n  ],\n  \"filter\": {\n    \"conjunction\": \"and\",\n    \"conditions\": [\n      {\n        \"field_name\": \"是否启用\",\n        \"operator\": \"is\",\n        \"value\": [\n          \"true\"\n        ]\n      }    \n    ]\n  },\n  \"automatic_fields\": false\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1648,
+        -160
+      ],
+      "id": "3191f165-b423-4745-9437-8494bce10dea",
+      "name": "获取RSS源列表",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n\nconst items = $input.all();\nconst list = items[0].json.data.items;\n\nreturn list.map(row => {\n  return {\n    json: {\n      id: row.fields['源ID'],\n      source_name: row.fields['源名称'][0].text,\n      source_link: row.fields['RSS地址'].link,\n      source_type: row.fields['来源类型'],\n      record_id: row.record_id,\n    },\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1488,
+        -160
+      ],
+      "id": "e6251286-6aaf-40dc-b8ee-6f4d9892c8b9",
+      "name": "拆分RSS源列表",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c5d06deb-33dc-471e-8892-bbf2bb8c94f5",
+              "name": "app_token",
+              "value": "VrjBb09mZaZauLsFdRrcqTSsnVe",
+              "type": "string"
+            },
+            {
+              "id": "1817ab91-0b11-40ed-b13e-2d8367d99638",
+              "name": "table_id",
+              "value": "tblfUO0sS1Obhsoe",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1824,
+        -160
+      ],
+      "id": "276a3533-913c-4037-83b3-53b276907a73",
+      "name": "指定RSS源管理表",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "content": "## 主循环体\n- 对RSS源逐一进行逻辑处理\n- 调用子工作流进行逻辑处理\n- 全部处理完成后发送即时群消息",
+        "height": 608,
+        "width": 816,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1344,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "852760fb-e14d-4ff8-9a07-04992fc77857",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 12
+            },
+            {
+              "triggerAtHour": 17
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2352,
+        32
+      ],
+      "id": "6a4b1e9f-4300-4493-898f-e4efc0e0f114",
+      "name": "每天12点和17点定时触发"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "trgBazoUBrRl91MO",
+          "mode": "list"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source_name": "={{ $('循环处理').item.json.source_name }}",
+            "source_type": "={{ $('循环处理').item.json.source_type }}",
+            "tenant_access_token": "={{ $('获取飞书token').item.json.tenant_access_token }}",
+            "source_link": "={{ $('循环处理').item.json.source_link }}"
+          },
+          "matchingColumns": [
+            "source_name",
+            "source_type",
+            "tenant_access_token",
+            "source_link"
+          ],
+          "schema": [
+            {
+              "id": "source_name",
+              "displayName": "source_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source_type",
+              "displayName": "source_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tenant_access_token",
+              "displayName": "tenant_access_token",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source_link",
+              "displayName": "source_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -720,
+        -32
+      ],
+      "name": "Call 【01_子工作流】AI智能选题评审工作流",
+      "id": "3be9060a-0d27-4d14-b310-50dc02efb19c"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "获取飞书token": {
+      "main": [
+        [
+          {
+            "node": "指定RSS源管理表",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "循环处理": {
+      "main": [
+        [
+          {
+            "node": "合并最终数据统一处理",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 【01_子工作流】AI智能选题评审工作流",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "设置应用凭证",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "合并最终数据统一处理": {
+      "main": [
+        [
+          {
+            "node": "向群组发送已完成消息",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "设置应用凭证": {
+      "main": [
+        [
+          {
+            "node": "获取飞书token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取RSS源列表": {
+      "main": [
+        [
+          {
+            "node": "拆分RSS源列表",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "拆分RSS源列表": {
+      "main": [
+        [
+          {
+            "node": "循环处理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "指定RSS源管理表": {
+      "main": [
+        [
+          {
+            "node": "获取RSS源列表",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 【01_子工作流】AI智能选题评审工作流": {
+      "main": [
+        [
+          {
+            "node": "循环处理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ac81591e-ae63-44bf-b76f-e6f932e7080e",
+  "meta": {
+    "instanceId": "830bfffc51ff88cd51b86a768f6a50a5b290896243e17b0bdf0f08551c38ba51"
+  },
+  "id": "rzjluNLVR0sJI2Vt",
+  "tags": [
+    {
+      "updatedAt": "2025-12-24T02:04:19.807Z",
+      "createdAt": "2025-12-24T02:04:19.807Z",
+      "id": "7VxF0aUtlavDiK5p",
+      "name": "选题雷达模型"
+    },
+    {
+      "updatedAt": "2025-10-30T12:47:20.269Z",
+      "createdAt": "2025-10-30T12:47:20.269Z",
+      "id": "f21vDmcMsvedJbTO",
+      "name": "飞书"
+    },
+    {
+      "updatedAt": "2025-12-24T02:03:59.943Z",
+      "createdAt": "2025-12-24T02:03:59.943Z",
+      "id": "mn1xzWvFhYinK7S3",
+      "name": "选题池"
+    },
+    {
+      "updatedAt": "2025-12-11T03:10:23.364Z",
+      "createdAt": "2025-12-11T03:10:23.364Z",
+      "id": "oA2SUvB8FyMOZ7QI",
+      "name": "RSS"
+    },
+    {
+      "updatedAt": "2025-12-15T05:59:01.229Z",
+      "createdAt": "2025-12-15T05:59:01.229Z",
+      "id": "vvSdsOAB9ETafUmt",
+      "name": "多维表格"
+    }
+  ]
+}

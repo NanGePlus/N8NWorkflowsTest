@@ -1,0 +1,696 @@
+{
+  "name": "【03】选题池状态监测工作流",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "toggleStatus",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -368,
+        112
+      ],
+      "id": "17755f24-8153-474c-b347-81a572d69c2d",
+      "name": "接收POST请求",
+      "webhookId": "6e2c4464-37a1-4f51-949d-c0a01c938b25",
+      "notesInFlow": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "f0JjmsGqiKuOm9l1",
+          "name": "Header Auth account"
+        }
+      },
+      "notes": "Webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal/",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\":\"application/json; charset=utf-8\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"app_id\": {{ $json.app_id.toJsonString() }},\n    \"app_secret\": {{ $json.app_secret.toJsonString() }}\n} ",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        32,
+        112
+      ],
+      "id": "cbff885c-fc49-4391-90ee-db82e11394bd",
+      "name": "获取飞书token",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad0fb75f-4bf4-4157-8641-07b6d87aa235",
+              "name": "app_id",
+              "value": "cli_a8759c6a213d500e",
+              "type": "string"
+            },
+            {
+              "id": "8211841d-8df6-413c-9518-6bd69380d327",
+              "name": "app_secret",
+              "value": "6bxgsxm5ETk0zcWmbGfyrfU6qZ21TZkx",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        112
+      ],
+      "id": "7e9f7493-865c-430a-b7de-d1a583d1b5af",
+      "name": "设置应用凭证",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "content": "## 实时监测选题状态触发事件\n- 监听POST请求\n- 获取飞书token",
+        "height": 528,
+        "width": 864,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "3f6ca39f-8872-4752-b5fb-6e90351ad43a",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 分支B：选题池选题状态变更为“进入创作”",
+        "height": 256,
+        "width": 880,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "254fe46c-2823-4e9a-bdeb-134a75b31383",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01c3b209-3dee-43d3-a117-dad4fc1229ff",
+              "name": "关联选题",
+              "value": "={{ $('接收POST请求').item.json.body.record_id }}",
+              "type": "string"
+            },
+            {
+              "id": "085266e8-4e67-4411-8997-514736f8bcee",
+              "name": "素材收集状态",
+              "value": "未开始",
+              "type": "string"
+            },
+            {
+              "id": "dffe6625-643c-4282-90a5-e50e93e0ccb5",
+              "name": "素材数量",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "83e9acc7-3c39-4ff0-b82f-2f7f9eceae69",
+              "name": "高质量素材数",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "5b0a230b-5cf0-4579-a8da-5c16b962d55d",
+              "name": "错误信息",
+              "value": "暂无",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        256
+      ],
+      "id": "4027dc32-19b7-4659-a1bb-0e50565dd217",
+      "name": "固定当前记录",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "content": "## 分支A或C：选题池选题状态变更为“待创作”或“废弃”",
+        "height": 256,
+        "width": 880,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "6b05e047-a8c4-4798-9bd5-930465b2f421",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $('接收POST请求').item.json.body.app_token }}/tables/{{ $('接收POST请求').item.json.body.table_id }}/records/{{ $json.data.items[0].record_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1136,
+        -16
+      ],
+      "id": "0c879312-680c-437a-a7fb-4348d6c748b7",
+      "name": "删除选题",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $('接收POST请求').item.json.body.app_token }}/tables/{{ $('接收POST请求').item.json.body.table_id }}/records",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"fields\": {\n    \"关联选题\": [\n      {{ $('固定当前记录').item.json['关联选题'].toJsonString() }}\n    ],\n    \"素材收集状态\":{{ $('固定当前记录').item.json['素材收集状态'].toJsonString() }},\n    \"素材数量\":{{ $('固定当前记录').item.json['素材数量'] }},\n    \"高质量素材数\":{{ $('固定当前记录').item.json['高质量素材数'] }},\n    \"错误信息\":{{ $('固定当前记录').item.json['错误信息'].toJsonString() }}\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1136,
+        256
+      ],
+      "id": "20d936ca-5590-4204-891c-485baad01090",
+      "name": "新增选题",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "019eccad-4f30-4d62-84ec-9865572bf589",
+              "leftValue": "={{ $json.data.total }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        928,
+        256
+      ],
+      "id": "6e5192d4-074c-48e7-a04d-312b683214b3",
+      "name": "过滤已经存在的选题",
+      "notesInFlow": true,
+      "notes": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "019eccad-4f30-4d62-84ec-9865572bf589",
+              "leftValue": "={{ $json.data.items[0].fields['素材收集状态'] }}",
+              "rightValue": "未开始",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "da68726b-76a4-4499-a999-e1073b05bde1",
+              "leftValue": "={{ $json.data.items[0].fields['素材收集状态'] }}",
+              "rightValue": "失败",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        928,
+        -16
+      ],
+      "id": "9d2cb254-0727-46c3-9760-b7c5b0f75275",
+      "name": "过滤素材收集进行中或完成的选题",
+      "notesInFlow": true,
+      "notes": "Filter"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01c3b209-3dee-43d3-a117-dad4fc1229ff",
+              "name": "关联选题",
+              "value": "={{ $('接收POST请求').item.json.body.record_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        -16
+      ],
+      "id": "cb36550b-2a1c-42e6-a097-ce6de83bdb45",
+      "name": "固定当前选题",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $('接收POST请求').item.json.body.app_token }}/tables/{{ $('接收POST请求').item.json.body.table_id }}/records/search ",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id_type",
+              "value": "open_id"
+            },
+            {
+              "name": "page_token"
+            },
+            {
+              "name": "page_size",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"sort\": [\n    {\n      \"field_name\": \"创作ID\",\n      \"desc\": false\n    }\n  ],\n  \"filter\": {\n    \"conjunction\": \"and\",\n    \"conditions\": [\n      {\n        \"field_name\": \"创建时间\",\n        \"operator\": \"is\",\n        \"value\": [\n          \"CurrentMonth\"\n        ]\n      },\n      {\n        \"field_name\": \"关联选题\",\n        \"operator\": \"is\",\n        \"value\": [\n          {{ $json['关联选题'].toJsonString() }}\n        ]\n      }\n    ]\n  },\n  \"automatic_fields\": false\n} ",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        720,
+        -16
+      ],
+      "id": "735a8a27-302d-40f4-b25b-ad676341294b",
+      "name": "获取本月创作池选题",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $('接收POST请求').item.json.body.app_token }}/tables/{{ $('接收POST请求').item.json.body.table_id }}/records/search ",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id_type",
+              "value": "open_id"
+            },
+            {
+              "name": "page_token"
+            },
+            {
+              "name": "page_size",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"sort\": [\n    {\n      \"field_name\": \"创作ID\",\n      \"desc\": false\n    }\n  ],\n  \"filter\": {\n    \"conjunction\": \"and\",\n    \"conditions\": [\n      {\n        \"field_name\": \"创建时间\",\n        \"operator\": \"is\",\n        \"value\": [\n          \"CurrentMonth\"\n        ]\n      },\n      {\n        \"field_name\": \"关联选题\",\n        \"operator\": \"is\",\n        \"value\": [\n          {{ $json['关联选题'].toJsonString() }}\n        ]\n      }\n    ]\n  },\n  \"automatic_fields\": false\n} ",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        720,
+        256
+      ],
+      "id": "efa4cd73-8937-418b-8d0e-4549d173967d",
+      "name": "获取本月创作池选题 ",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('接收POST请求').item.json.body.status }}",
+                    "rightValue": "待创作",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "dd1ca09d-f9c9-47ef-880e-23ebd72b9a9b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "A"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b96f6ac7-0ca7-423b-bbe4-ba696d5e01c5",
+                    "leftValue": "={{ $('接收POST请求').item.json.body.status }}",
+                    "rightValue": "进入创作",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "B"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "804ad9c8-4066-46f9-a4ac-8a61280c977e",
+                    "leftValue": "={{ $('接收POST请求').item.json.body.status }}",
+                    "rightValue": "废弃",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "C"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        96
+      ],
+      "id": "15a09848-e2fd-42d6-89aa-4c8240653c86",
+      "name": "选题池选题状态分支",
+      "notesInFlow": true,
+      "notes": "Switch"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "接收POST请求": {
+      "main": [
+        [
+          {
+            "node": "设置应用凭证",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "设置应用凭证": {
+      "main": [
+        [
+          {
+            "node": "获取飞书token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取飞书token": {
+      "main": [
+        [
+          {
+            "node": "选题池选题状态分支",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "固定当前记录": {
+      "main": [
+        [
+          {
+            "node": "获取本月创作池选题 ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "新增选题": {
+      "main": [
+        []
+      ]
+    },
+    "过滤已经存在的选题": {
+      "main": [
+        [
+          {
+            "node": "新增选题",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "过滤素材收集进行中或完成的选题": {
+      "main": [
+        [
+          {
+            "node": "删除选题",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "固定当前选题": {
+      "main": [
+        [
+          {
+            "node": "获取本月创作池选题",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取本月创作池选题": {
+      "main": [
+        [
+          {
+            "node": "过滤素材收集进行中或完成的选题",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取本月创作池选题 ": {
+      "main": [
+        [
+          {
+            "node": "过滤已经存在的选题",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "选题池选题状态分支": {
+      "main": [
+        [
+          {
+            "node": "固定当前选题",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "固定当前记录",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "固定当前选题",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "afb99b87-e1f3-45b1-8291-77c9fba81900",
+  "meta": {
+    "instanceId": "830bfffc51ff88cd51b86a768f6a50a5b290896243e17b0bdf0f08551c38ba51"
+  },
+  "id": "lHVe9l33tLvl3DrF",
+  "tags": []
+}

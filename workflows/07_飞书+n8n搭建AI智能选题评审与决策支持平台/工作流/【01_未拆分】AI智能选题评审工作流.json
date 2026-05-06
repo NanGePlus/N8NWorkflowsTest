@@ -1,0 +1,1711 @@
+{
+  "name": "【01_未拆分】AI智能选题评审工作流",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal/",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\":\"application/json; charset=utf-8\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"app_id\": {{ $json.app_id.toJsonString() }},\n    \"app_secret\": {{ $json.app_secret.toJsonString() }}\n} ",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2000,
+        -160
+      ],
+      "id": "77944fb9-9917-42d5-81f9-457f0d8713a5",
+      "name": "获取飞书token",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1264,
+        -160
+      ],
+      "id": "6b06ecad-a3ba-42b3-afbe-00bbf1827e33",
+      "name": "循环处理",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2352,
+        -160
+      ],
+      "id": "2d49c677-78ac-46eb-9859-0ad710da980c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1056,
+        0
+      ],
+      "id": "285f3577-17cd-470c-a68b-4abc1f868e11",
+      "name": "合并最终数据统一处理",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Aggregate"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/im/v1/messages",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "receive_id_type",
+              "value": "chat_id"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"receive_id\":\"oc_9619619c722d54d1b6589f7405855d59\",\n    \"msg_type\": \"post\",\n    \"content\":\"{\\\"zh_cn\\\":{\\\"title\\\":\\\"选题进度\\\",\\\"content\\\":[[{\\\"tag\\\":\\\"at\\\",\\\"user_id\\\":\\\"\\\",\\\"user_name\\\":\\\"所有人\\\"}],[{\\\"tag\\\":\\\"md\\\",\\\"text\\\":\\\"**今天的选题已全部完成** \\\"}],[{\\\"tag\\\":\\\"a\\\",\\\"href\\\":\\\"https://mcn33lfbwjgi.feishu.cn/base/VrjBb09mZaZauLsFdRrcqTSsnVe?table=tbl75OvZpQtdLABJ&view=vewwbkXKn7\\\",\\\"text\\\":\\\"点击查看详情\\\"}]]}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -880,
+        0
+      ],
+      "id": "8682ebf6-c0f1-4360-8fa4-a28c800d70bd",
+      "name": "向群组发送已完成消息",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad0fb75f-4bf4-4157-8641-07b6d87aa235",
+              "name": "app_id",
+              "value": "cli_a8759c6a213d500e",
+              "type": "string"
+            },
+            {
+              "id": "8211841d-8df6-413c-9518-6bd69380d327",
+              "name": "app_secret",
+              "value": "6bxgsxm5ETk0zcWmbGfyrfU6qZ21TZkx",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2176,
+        -160
+      ],
+      "id": "3cb7b9e9-859e-4683-a952-4e0fb5f4b205",
+      "name": "设置应用凭证",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        416,
+        -192
+      ],
+      "id": "fe2620f1-fda2-4f83-9da0-dd53c28d1203",
+      "name": "循环处理 ",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df0c9951-b1ba-47a6-bea4-ebc5a4b95f95",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "566f7d57-d592-48b3-82cd-fa010d8d70f0",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "2bb11518-85f1-46cd-8105-1fceb90f20a9",
+              "name": "pubDate",
+              "value": "={{ $json.pubDate }}",
+              "type": "string"
+            },
+            {
+              "id": "1478e0ec-2591-42f9-aae1-0f8835f225eb",
+              "name": "data",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            },
+            {
+              "id": "9c64cc31-fb82-47c5-8920-e6f937497976",
+              "name": "source_name",
+              "value": "={{ $('循环处理').item.json.source_name }}",
+              "type": "string"
+            },
+            {
+              "id": "9c99a969-5539-4017-b3af-ea928e9811a5",
+              "name": "source_type",
+              "value": "={{ $('循环处理').item.json.source_type }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -208,
+        -192
+      ],
+      "id": "135f850a-8863-4dda-86c7-64f27cecc8fc",
+      "name": "清洗数据",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n\nconst items = $input.all();\nconst list = items[0].json.data.items;\n\nreturn list.map(row => {\n  return {\n    json: {\n      title: row.fields[\"标题\"][0].text,\n      link: row.fields['原始链接'].link\n    },\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        32
+      ],
+      "id": "b0f92d3d-a59a-4b33-bf70-3b4fcd68a414",
+      "name": "拆分数据",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f09a15e4-8637-4d43-ae2d-81437e946f89",
+              "leftValue": "={{ new Date($json.pubDate).getTime() }}",
+              "rightValue": "={{ Date.now() - 24 * 3600 * 1000 }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        16,
+        -192
+      ],
+      "id": "48a220a2-20e0-441e-b96f-d50e7a3533b8",
+      "name": "保留24小时内数据",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "Filter"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $json.app_token }}/tables/{{ $json.table_id }}/records/search ",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id_type",
+              "value": "open_id"
+            },
+            {
+              "name": "page_token"
+            },
+            {
+              "name": "page_size",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"sort\": [\n    {\n      \"field_name\": \"选题ID\",\n      \"desc\": false\n    }\n  ],\n  \"filter\": {\n    \"conjunction\": \"and\",\n    \"conditions\": [\n      {\n        \"field_name\": \"创建时间\",\n        \"operator\": \"is\",\n        \"value\": [\n          \"CurrentMonth\"\n        ]\n      }\n    ]\n  },\n  \"automatic_fields\": false\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -208,
+        32
+      ],
+      "id": "ef9b4776-2328-4705-8c6d-acef778fb3f6",
+      "name": "获取过去30天内记录",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * 将Markdown文本转换为纯文本\n * @param {string} markdown - 输入的Markdown格式文本\n * @returns {string} - 转换后的纯文本字符串\n */\n\n// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n\nfunction markdownToText(markdown) {\n    // 如果输入的markdown为空或undefined，则返回空字符串\n    if (!markdown) return '';\n\n    // 将输入的markdown字符串赋值给text变量，作为后续处理的副本\n    let text = markdown;\n\n    // 处理转义字符（移至开头，以确保在其他替换前解析转义）\n    // 使用正则表达式全局处理转义字符，将反斜杠及其后的特殊字符替换为原字符\n    text = text.replace(/\\\\([\\\\`*_{}\\[\\]()#+\\-.!])/g, '$1');\n\n    // 移除代码块\n    // 使用正则表达式全局替换代码块（由三个反引号包围的内容），替换为空字符串\n    text = text.replace(/```[\\s\\S]*?```/g, '');\n    // 使用正则表达式全局替换行内代码（由单个反引号包围的内容），保留内部文本\n    text = text.replace(/`([^`]+)`/g, '$1');\n\n    // 移除标题符号\n    // 使用正则表达式匹配并移除行首的1到6个#符号及其后的空格（多行模式）\n    text = text.replace(/^#{1,6}\\s+/gm, '');\n\n    // 移除粗体和斜体\n    // 使用正则表达式全局替换粗体标记（两个*或_包围的内容），保留内部文本\n    text = text.replace(/[*_]{2}([^*_]+)[*_]{2}/g, '$1'); // 粗体\n    // 使用正则表达式全局替换斜体标记（单个*或_包围的内容），保留内部文本\n    text = text.replace(/[*_]([^*_]+)[*_]/g, '$1'); // 斜体\n\n    // 处理链接\n    // 使用正则表达式全局替换链接标记[文本](URL)，保留文本部分\n    text = text.replace(/\\[([^\\]]+)\\]\\([^)]+\\)/g, '$1'); // [文本](链接)\n    // 使用正则表达式全局替换引用链接标记[文本][引用]，保留文本部分\n    text = text.replace(/\\[([^\\]]+)\\]\\[[^\\]]*\\]/g, '$1'); // [文本][引用]\n\n    // 移除图片标记（优化：始终移除图片标记，不保留alt文本，以避免孤立短词）\n    // 使用正则表达式全局替换图片标记![alt](URL)，替换为空字符串\n    text = text.replace(/!\\[([^\\]]*?)\\]\\([^)]+\\)/g, '');\n\n    // 处理列表\n    // 使用正则表达式多行模式移除无序列表标记（行首的-、*或+及其空格）\n    text = text.replace(/^[\\s]*[\\-*+]\\s+/gm, ''); // 无序列表\n    // 使用正则表达式多行模式移除有序列表标记（行首的数字.及其空格）\n    text = text.replace(/^[\\s]*\\d+\\.\\s+/gm, ''); // 有序列表\n\n    // 处理引用\n    // 使用正则表达式多行模式移除引用标记（行首的>及其空格）\n    text = text.replace(/^\\s*>\\s+/gm, '');\n\n    // 处理水平分割线\n    // 使用正则表达式多行模式将水平分割线（三个或更多-、*或_）替换为换行符\n    text = text.replace(/^\\s*[-*_]{3,}\\s*$/gm, '\\n');\n\n    // 移除HTML标签\n    // 使用正则表达式全局移除所有HTML标签\n    text = text.replace(/<[^>]+>/g, '');\n\n    // 清理多余的空行（优化：先按行trim，然后归一化空行）\n    // 按行分割，每行trim去除首尾空白\n    text = text.split('\\n').map(line => line.trim()).join('\\n');\n    // 使用正则表达式将三个或更多连续换行替换为两个换行（保留段落分隔）\n    text = text.replace(/\\n{3,}/g, '\\n\\n');\n    // 使用正则表达式全局移除字符串首尾的空白字符\n    text = text.replace(/^\\s+|\\s+$/g, '');\n\n    // 返回处理后的纯文本字符串\n    return text;\n}\n\n// 获取输入数据\n// 从n8n输入中获取第一个项的JSON数据，并赋值给input变量\nconst input = $input.first().json;\n\n// 转换 Markdown 为纯文本\n// 调用markdownToText函数处理input.data字段的Markdown内容，得到纯文本\nconst plainText = markdownToText(input.data);\n\n// 返回 n8n 规范的输出\n// 返回一个数组，包含一个对象，符合n8n的输出规范\nreturn [{ \n    title: input.title,  \n    link: input.link, \n    pubDate: DateTime.fromFormat(input.pubDate, 'ccc, dd LLL yyyy HH:mm:ss ZZZ').toFormat('yyyy.MM.dd HH:mm:ss'),  \n    content: plainText,\n    source_name: input.source_name,\n    source_type: input.source_type,\n    source_weight: input.source_weight\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        -144
+      ],
+      "id": "58e12825-5773-47c0-8ded-55fd1b1fdf7c",
+      "name": "数据清洗",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "content": "## 获取RSS源数据并去重\n- 循环逐个读取RSS源链接数据\n- 对读取的数据进行去重处理(只保留24小时内的文章、且与选题池中文章去重)\n- 文章内容数据清洗(HTML转Markdown等)只保留部分字段\n- 循环结束通过飞信发送即时消息到群组进行通知\n",
+        "height": 608,
+        "width": 992,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -672,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "bd68adda-2dd0-4b48-b7b4-8c5f49dc45c7",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 获取RSS源列表\n- 设置飞书服务应用凭证并获取token\n- 指定具体访问哪一个飞书多维表格\n- 从RSS源多维表格中获取RSS源链接\n- 拆分多条RSS源链接分别读取数据",
+        "height": 608,
+        "width": 1056,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2416,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "36e8927c-4148-4572-9fd0-b2a00c35cb75",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 对每个RSS源读取的每条数据进行打分和打标签\n- 对某次循环中的RSS源读取到的数据进行循环处理\n- 对读取到的每条数据进行清洗(通过正则表达式清洗内容)\n- 使用AI自动生成文章摘要\n- 使用Code节点实现QUAD‑AI选题雷达模型规则打分逻辑\n- 使用AI进行4维度微调并最终合并分数\n- 新增选题记录到选题池多维表格并对触发紧急预警标记的选题即时推送消息",
+        "height": 608,
+        "width": 2384,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "cc7c4197-283b-4daf-bdb4-8477342ae9f8",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ========================================\n// 关键词配置：用于识别账号定位（类似量子位的科技媒体账号）相关内容\n// ========================================\n\n// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n\nconst KEYWORDS = [\n  '人工智能', 'AI', '大模型', 'LLM', '基础模型', 'foundation model',\n  'Agent', '代理', '多模态', '多模态', 'Transformer',\n  'AIGC', '生成式', '生成模型',\n  '算力', 'GPU', 'NVIDIA', '英伟达', '芯片', '半导体', 'ASIC',\n  '云计算', '云', '推理加速', '推理引擎', '推理服务',\n  'AGI', '通用人工智能',\n  '机器人', '自动驾驶', '无人车', '无人机',\n  'arxiv', 'NeurIPS', 'ICLR', 'ICML', 'CVPR', 'ACL', 'EMNLP', 'KDD',\n  '论文', '研究', '实验', 'SOTA', 'state-of-the-art'\n];\n\n// ========================================\n// 核心信息源配置：重点关注的媒体来源\n// ========================================\nconst CORE_SOURCES = ['量子位', '机器之心', '新智元'];\n\n// ========================================\n// 时间新鲜度阈值配置（单位：小时）\n// ========================================\nconst FRESH_6H = 6;   // 6小时内视为超新鲜\nconst FRESH_24H = 24; // 24小时内视为新鲜\n\n// ========================================\n// 工具函数：将数值限制在指定范围内\n// ========================================\nfunction clamp(v, min, max) {\n  return Math.max(min, Math.min(max, v));\n}\n\n// ========================================\n// (1) 相关性评分函数：评估内容与账号定位的相关程度\n// 评分范围：0-25分\n// ========================================\nfunction calcRelevance(title, summary, source_name) {\n  // 将标题和摘要合并为小写文本，便于关键词匹配\n  const text = `${title} ${summary}`.toLowerCase();\n  let score = 0;\n  let hits = 0;\n  \n  // 统计命中的关键词数量\n  KEYWORDS.forEach(k => {\n    if (text.includes(k.toLowerCase())) hits++;\n  });\n\n  // 根据关键词命中数量分配基础分数\n  if (hits === 0) {\n    // 完全不命中领域关键词，认为价值很低\n    score = 2;\n  } else if (hits === 1) {\n    score = 10;\n  } else if (hits === 2) {\n    score = 15;\n  } else if (hits >= 3) {\n    score = 20;\n  }\n  \n  // 如果来源是重点关注的媒体，额外加分\n  if (CORE_SOURCES.includes(source_name)) {\n    score += 5;\n  }\n\n  // 确保分数在0-25范围内\n  return clamp(score, 0, 25);\n}\n\n// ========================================\n// (2) 时效性评分函数：评估新闻的新鲜度和热度\n// 评分范围：0-25分\n// ========================================\nfunction calcTimeliness(pubDate) {\n  // 如果没有发布日期，返回0分\n  if (!pubDate) return 0;\n  // 计算发布时间与当前时间的差值（小时）\n  const diffHours = ($now.toMillis() - DateTime.fromFormat(pubDate, 'yyyy.MM.dd HH:mm:ss').toMillis()) / (1000 * 60 * 60);\n  let score = 0;\n\n  // 根据时间差分配分数，越新鲜分数越高\n  if (diffHours <= FRESH_6H) {\n    score = 22; // 超新鲜内容（6小时内）\n  } else if (diffHours <= FRESH_24H) {\n    score = 18; // 新鲜内容（24小时内）\n  } else if (diffHours <= 72) {\n    score = 12; // 较新内容（3天内）\n  } else if (diffHours <= 168) {\n    score = 6;  // 一周内内容\n  } else {\n    score = 2;  // 旧闻，但不给绝对0分\n  }\n\n  // 确保分数在0-25范围内\n  return clamp(score, 0, 25);\n}\n\n// ========================================\n// (3) 深度与新颖性评分函数：评估内容的深度和技术含量\n// 评分范围：0-25分\n// ========================================\nfunction calcDepth(title, summary, source_type) {\n  // 合并标题和摘要用于分析\n  const text = `${title} ${summary}`;\n  let score = 0;\n\n  // 检测研究/技术/论文相关的深度信号词\n  const depthWords = [\n    '论文', '研究', '实验', '架构', '算法', '原理', '技术细节',\n    '系统', '框架', '模型结构', '训练方法', '对比实验', 'benchmark', 'SOTA'\n  ];\n  if (depthWords.some(w => text.includes(w))) score += 10;\n\n  // 检测长文/深度分析信号词\n  const longformWords = ['长文', '深度', '完全指南', '全解析', '详解', '拆解'];\n  if (longformWords.some(w => text.includes(w))) score += 5;\n\n  // 摘要较长通常意味着信息量更大\n  if (summary && summary.length > 300) score += 5;\n\n  // 来源类型为学术机构/官方博客类，额外加分\n  if (source_type === '学术机构' || source_type === '官方博客') {\n    score += 5;\n  }\n\n  // 确保分数在0-25范围内\n  return clamp(score, 0, 25);\n}\n\n// ========================================\n// (4) 影响力评分函数：评估对行业格局/技术路线/商业落地的重要性\n// 评分范围：0-25分\n// ========================================\nfunction calcImpact(title, summary, source_type) {\n  // 合并标题和摘要用于分析\n  const text = `${title} ${summary}`;\n  let score = 0;\n\n  // 检测商业大事件信号词（融资/并购/上市等）\n  const impactWordsBusiness = [\n    '融资', '收购', '并购', '上市', 'IPO', '估值', '破产', '倒闭',\n    '裁员', '大裁员'\n  ];\n  if (impactWordsBusiness.some(w => text.includes(w))) score += 8;\n\n  // 检测技术/产品重大事件信号词\n  const impactWordsTech = [\n    '发布', '开源', '重大更新', 'v1.0', 'v2.0', '2.0', '里程碑',\n    '突破', '颠覆', '革命性', '大幅提升', 'state-of-the-art', 'SOTA'\n  ];\n  if (impactWordsTech.some(w => text.includes(w))) score += 8;\n\n  // 检测监管/政策/标准相关信号词\n  const impactWordsPolicy = [\n    '监管', '法规', '政策', '合规', '指南', '禁令', '标准', '草案'\n  ];\n  if (impactWordsPolicy.some(w => text.includes(w))) score += 8;\n\n  // 检测是否涉及头部玩家/巨头公司\n  const bigPlayers = [\n    'OpenAI', 'Google', 'DeepMind', 'Anthropic', 'Meta', '微软',\n    'Microsoft', 'NVIDIA', '英伟达', '亚马逊', 'Amazon',\n    '阿里', '腾讯', '字节', '百度', '特斯拉', 'Tesla'\n  ];\n  if (bigPlayers.some(b => text.includes(b))) score += 5;\n\n  // 来源类型为公众号/政策机构/官方博客，额外加分\n  if (source_type === '公众号' || source_type === '政策机构' || source_type === '官方博客') {\n    score += 4;\n  }\n\n  // 确保分数在0-25范围内\n  return clamp(score, 0, 25);\n}\n\n// ========================================\n// 机器标签推断函数：根据内容自动识别相关标签\n// ========================================\nfunction inferBasicTags(text) {\n  const tags = [];\n  \n  // 根据关键词匹配添加相应标签\n  if (text.includes('大模型') || text.includes('LLM') || text.includes('基础模型')) tags.push('大模型');\n  if (text.includes('Agent') || text.includes('代理')) tags.push('Agent');\n  if (text.includes('多模态')) tags.push('多模态');\n  if (text.includes('算力') || text.includes('GPU') || text.includes('芯片') || text.includes('半导体')) tags.push('算力/芯片');\n  if (text.includes('云') || text.includes('云计算')) tags.push('云/基础设施');\n  if (text.includes('机器人') || text.includes('自动驾驶') || text.includes('无人车') || text.includes('无人机')) tags.push('机器人/自动驾驶');\n  if (text.includes('监管') || text.includes('政策') || text.includes('合规')) tags.push('AI治理/政策');\n  if (text.toLowerCase().includes('arxiv') || text.includes('论文') || text.includes('研究')) tags.push('论文/科研');\n  \n  // 如果没有匹配到任何标签，添加默认标签\n  if (tags.length === 0) tags.push('综合AI资讯');\n  \n  // 去重并返回标签数组\n  return Array.from(new Set(tags));\n}\n\n// ========================================\n// 一级赛道推断函数：识别内容所属的主要技术赛道\n// ========================================\nfunction inferPrimaryTrack(text) {\n  // 按优先级匹配赛道，先匹配到的优先返回\n  if (text.includes('大模型') || text.includes('LLM') || text.includes('基础模型')) return '大模型/基础模型';\n  if (text.includes('Agent') || text.includes('代理')) return 'Agent/自动化';\n  if (text.includes('多模态')) return '多模态/视觉/语音';\n  if (text.includes('算力') || text.includes('GPU') || text.includes('芯片') || text.includes('半导体')) return '算力/芯片';\n  if (text.includes('云') || text.includes('云计算') || text.includes('边缘计算')) return '云/基础设施';\n  if (text.includes('机器人') || text.includes('自动驾驶') || text.includes('无人车') || text.includes('无人机')) return '机器人/自动驾驶';\n  if (text.includes('监管') || text.includes('政策') || text.includes('合规') || text.includes('伦理')) return 'AI治理/政策';\n  if (text.toLowerCase().includes('arxiv') || text.includes('论文') || text.includes('研究')) return '论文/科研';\n  \n  // 默认赛道\n  return '综合AI资讯';\n}\n\n// ========================================\n// 主流程：获取输入数据并执行评分\n// ========================================\n\n// 从数据清洗节点获取基础信息\nconst title = $('数据清洗').first().json.title || '';\nconst summary = $input.first().json.output.summary || '';\nconst source_name = $('数据清洗').first().json.source_name || '';\nconst source_type = $('数据清洗').first().json.source_type || '';\nconst pubDate = $('数据清洗').first().json.pubDate\n\n// 计算四个维度的评分\nconst relevance = calcRelevance(title, summary, source_name);\nconst timeliness = calcTimeliness(pubDate);\nconst depth = calcDepth(title, summary, source_type);\nconst impact = calcImpact(title, summary, source_type);\n\n// 执行机器标签和一级赛道推断\nconst text = `${title} ${summary}`;\nconst basicTags = inferBasicTags(text);\nconst primaryTrack = inferPrimaryTrack(text);\n\n// 计算发布时效性（距今多少小时）\nlet pubHoursAgo = null;\nif (pubDate) {\n  // 计算发布时间与当前时间的小时差\n  const diffHours = ($now.toMillis() - DateTime.fromFormat(pubDate, 'yyyy.MM.dd HH:mm:ss').toMillis()) / (1000 * 60 * 60);\n  // 四舍五入到整数小时\n  pubHoursAgo = Math.round(diffHours);\n}\n\n// ========================================\n// 返回处理结果\n// ========================================\nreturn {\n  json: {\n    // 四维度评分结果\n    rule_scores: { relevance, timeliness, depth, impact },\n    // 机器推断的标签\n    basic_tags: basicTags,\n    // 机器推断的一级赛道\n    primary_track: primaryTrack,\n    // 发布时效性\n    pub_hours_ago: pubHoursAgo,\n  },\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1136,
+        -176
+      ],
+      "id": "8ce4ff0c-c01d-4f34-ad5f-183443707582",
+      "name": "基于规则打分",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c5d06deb-33dc-471e-8892-bbf2bb8c94f5",
+              "name": "app_token",
+              "value": "VrjBb09mZaZauLsFdRrcqTSsnVe",
+              "type": "string"
+            },
+            {
+              "id": "1817ab91-0b11-40ed-b13e-2d8367d99638",
+              "name": "table_id",
+              "value": "tbl75OvZpQtdLABJ",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2032,
+        -176
+      ],
+      "id": "147a3a3b-d31e-4623-8515-aaecd6098bed",
+      "name": "指定多维表格 ",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01c3b209-3dee-43d3-a117-dad4fc1229ff",
+              "name": "标题",
+              "value": "={{ $('数据清洗').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "3622637e-d4ad-4bc7-be46-c6a91cf51fbb",
+              "name": "摘要",
+              "value": "={{ $('AI文章摘要生成').item.json.output.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "47d22339-b636-46a0-9922-732a61e52c09",
+              "name": "原始内容",
+              "value": "={{ $('数据清洗').item.json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "4fa82663-db72-4075-b1c6-8853ccd48133",
+              "name": "原始链接",
+              "value": "={{ $('数据清洗').item.json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "41fa8064-19bb-47e0-9159-21d4ae28fc86",
+              "name": "来源名称",
+              "value": "={{ $('数据清洗').item.json.source_name }}",
+              "type": "string"
+            },
+            {
+              "id": "3d2f4748-ff14-4477-867c-2d8ae1baddee",
+              "name": "来源类型",
+              "value": "={{ $('数据清洗').item.json.source_type }}",
+              "type": "string"
+            },
+            {
+              "id": "6214c88c-d906-406f-8104-053db9b850c1",
+              "name": "发布时间",
+              "value": "={{ DateTime.fromFormat($('数据清洗').item.json.pubDate, 'yyyy.MM.dd HH:mm:ss').toMillis() }}",
+              "type": "string"
+            },
+            {
+              "id": "1d7b9d9d-6b85-4c83-b2cc-676dbc2bfdcf",
+              "name": "领域相关度得分",
+              "value": "={{ $json.factor_scores.relevance }}",
+              "type": "number"
+            },
+            {
+              "id": "d89fb368-065f-42a8-8d68-6eb0330e81b7",
+              "name": "时效性热点程度得分",
+              "value": "={{ $json.factor_scores.timeliness }}",
+              "type": "number"
+            },
+            {
+              "id": "35060137-2284-4619-b121-93997fd1e78c",
+              "name": "深度新颖性得分",
+              "value": "={{ $json.factor_scores.depth }}",
+              "type": "number"
+            },
+            {
+              "id": "9d8a4776-3e46-4804-a345-965d5ea078be",
+              "name": "影响力重要性得分",
+              "value": "={{ $json.factor_scores.impact }}",
+              "type": "number"
+            },
+            {
+              "id": "fb890838-5e87-4f8a-a9d3-5f3c229a9711",
+              "name": "最终热度得分",
+              "value": "={{ $json.final_score }}",
+              "type": "number"
+            },
+            {
+              "id": "656b067d-2e81-45f9-8bce-4212d9b5d6b2",
+              "name": "AI潜力得分",
+              "value": "={{ $json.ai_potential_score }}",
+              "type": "number"
+            },
+            {
+              "id": "aa413545-e224-4ee3-8929-8855409157ae",
+              "name": "一级赛道",
+              "value": "={{ $json.primary_track }}",
+              "type": "string"
+            },
+            {
+              "id": "57c2b2fa-84b3-4228-864b-5c744291af0a",
+              "name": "内容类型",
+              "value": "={{ $json.content_type }}",
+              "type": "string"
+            },
+            {
+              "id": "ed031cc9-92d7-4d25-a167-a59ca8b8061d",
+              "name": "机器标签",
+              "value": "={{ $json.machine_tags.join('；') }}",
+              "type": "string"
+            },
+            {
+              "id": "2b3b8114-bea2-4d4c-817d-92e6707a1d78",
+              "name": "竞争度",
+              "value": "={{ $json.competition_level }}",
+              "type": "string"
+            },
+            {
+              "id": "617c3e6d-ab6d-4185-9276-731c1fc7e3f2",
+              "name": "变现潜力",
+              "value": "={{ $json.monetization_potential }}",
+              "type": "string"
+            },
+            {
+              "id": "e0bcb60e-3a9c-4dbb-b75e-212a2d08b93d",
+              "name": "执行槽位",
+              "value": "={{ $json.execution_slot }}",
+              "type": "string"
+            },
+            {
+              "id": "069465bc-0799-44e8-94f0-2af8e3534b99",
+              "name": "执行建议",
+              "value": "={{ $json.execution_hint }}",
+              "type": "string"
+            },
+            {
+              "id": "514f8958-6030-4ec4-b6cf-fc33383e9aea",
+              "name": "执行策略详情",
+              "value": "={{ $json.execution_strategy_detail}}",
+              "type": "string"
+            },
+            {
+              "id": "77967b74-4b8c-46c7-86d9-f91685200632",
+              "name": "优先级",
+              "value": "={{ $json.priority }}",
+              "type": "string"
+            },
+            {
+              "id": "bce910b9-4adc-4155-997f-a0c7e29de3af",
+              "name": "人工优先级修正",
+              "value": "不改",
+              "type": "string"
+            },
+            {
+              "id": "6e7f4765-7a07-408a-95f6-ed1a173299a7",
+              "name": "状态",
+              "value": "待创作",
+              "type": "string"
+            },
+            {
+              "id": "ce49e12b-538d-476d-8bf0-0d1efa7b2fc4",
+              "name": "紧急预警标记",
+              "value": "={{ $json.urgent_alert }}",
+              "type": "string"
+            },
+            {
+              "id": "288b5aca-1ed1-43ca-ad0a-9d16340ee882",
+              "name": "选题池类型",
+              "value": "观察池",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1856,
+        -176
+      ],
+      "id": "65c0a1a3-5a82-408e-bb0e-54c2ef838eb2",
+      "name": "固定字段",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "frequencyPenalty": 0,
+          "responseFormat": "json_object",
+          "temperature": 0.7,
+          "timeout": 300000,
+          "maxRetries": 2,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        64
+      ],
+      "id": "df43176b-0148-417f-b3e2-bacd294f2726",
+      "name": "gpt-4o-mini",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "KcHzWF39O8ZtiGQr",
+          "name": "OpenAi account"
+        }
+      },
+      "notes": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "deepseek-v3",
+          "mode": "list",
+          "cachedResultName": "deepseek-v3"
+        },
+        "options": {
+          "frequencyPenalty": 0,
+          "responseFormat": "json_object",
+          "temperature": 0.7,
+          "timeout": 300000,
+          "maxRetries": 2,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        64
+      ],
+      "id": "32df659c-da2b-4b63-b6c9-131703ed7939",
+      "name": "deepseek-v3",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "KcHzWF39O8ZtiGQr",
+          "name": "OpenAi account"
+        }
+      },
+      "notes": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"summary\": {\n\t\t\t\"type\": \"string\",\n            \"description\":\"文章内容\"\n\t\t}\n\t},\n  \"required\": [\"summary\"]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        944,
+        80
+      ],
+      "id": "db73c82c-babc-4c42-ba6d-7a05e1a6c967",
+      "name": "强制格式化输出",
+      "notesInFlow": true,
+      "notes": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('循环处理').item.json.source_link }}",
+        "options": {
+          "ignoreSSL": true
+        }
+      },
+      "id": "6153aa0e-9ab7-4421-864b-e63de2b67f7c",
+      "name": "读取RSS源",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -624,
+        -80
+      ],
+      "typeVersion": 1.1,
+      "notesInFlow": true,
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "RSS Read"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.content }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -192
+      ],
+      "id": "61595962-c68a-4058-9556-e449bfb617fb",
+      "name": "HTML转为Markdown",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $json.app_token }}/tables/{{ $json.table_id }}/records/search ",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id_type",
+              "value": "open_id"
+            },
+            {
+              "name": "page_token"
+            },
+            {
+              "name": "page_size",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"sort\": [\n    {\n      \"field_name\": \"源ID\",\n      \"desc\": false\n    }\n  ],\n  \"filter\": {\n    \"conjunction\": \"and\",\n    \"conditions\": [\n      {\n        \"field_name\": \"是否启用\",\n        \"operator\": \"is\",\n        \"value\": [\n          \"true\"\n        ]\n      }    \n    ]\n  },\n  \"automatic_fields\": false\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1648,
+        -160
+      ],
+      "id": "7048d2e8-ad03-4bff-8bd7-96ae606ec0fb",
+      "name": "获取RSS源列表",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n\nconst items = $input.all();\nconst list = items[0].json.data.items;\n\nreturn list.map(row => {\n  return {\n    json: {\n      id: row.fields['源ID'],\n      source_name: row.fields['源名称'][0].text,\n      source_link: row.fields['RSS地址'].link,\n      source_type: row.fields['来源类型'],\n      record_id: row.record_id,\n    },\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1488,
+        -160
+      ],
+      "id": "f4fd06eb-3b4e-48f5-90c0-4f81688e9bf4",
+      "name": "拆分RSS源列表",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c5d06deb-33dc-471e-8892-bbf2bb8c94f5",
+              "name": "app_token",
+              "value": "VrjBb09mZaZauLsFdRrcqTSsnVe",
+              "type": "string"
+            },
+            {
+              "id": "1817ab91-0b11-40ed-b13e-2d8367d99638",
+              "name": "table_id",
+              "value": "tblfUO0sS1Obhsoe",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1824,
+        -160
+      ],
+      "id": "3ce07fbd-33c2-45c5-b585-84db1d373c7a",
+      "name": "指定RSS源管理表",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c5d06deb-33dc-471e-8892-bbf2bb8c94f5",
+              "name": "app_token",
+              "value": "VrjBb09mZaZauLsFdRrcqTSsnVe",
+              "type": "string"
+            },
+            {
+              "id": "1817ab91-0b11-40ed-b13e-2d8367d99638",
+              "name": "table_id",
+              "value": "tbl75OvZpQtdLABJ",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        32
+      ],
+      "id": "017557e9-6ca5-4249-82dc-51389565e484",
+      "name": "指定选题池多维表格",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "executeOnce": true,
+      "notes": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n    \"adjust_scores\": {\n      \"relevance_adjust\": 5,\n      \"timeliness_adjust\": -5,\n      \"depth_adjust\": 10,\n      \"impact_adjust\": -8\n    },\n\t\"primary_track\": \"大模型/基础模型\",\n    \"content_type\": \"长文解读\",\n    \"deep_dive_suitable\": true,\n    \"monetization_potential\": \"高\",\n    \"ai_potential_score\": 8,\n    \"machine_tags\": [\"大模型\",\"开源项目\"],\n    \"competition_level\": \"高\",\n    \"execution_hint\": \"适合做技术拆解长文\"\n}\n",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1504,
+        80
+      ],
+      "id": "879efe6c-0f8a-456d-8c09-e58e637e4477",
+      "name": "强制格式化输出 ",
+      "notesInFlow": true,
+      "notes": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "frequencyPenalty": 0,
+          "responseFormat": "json_object",
+          "temperature": 0.7,
+          "timeout": 300000,
+          "maxRetries": 2,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1232,
+        64
+      ],
+      "id": "f50caf9f-0d14-46cb-b023-d44df2600768",
+      "name": "gpt-4o-mini ",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "KcHzWF39O8ZtiGQr",
+          "name": "OpenAi account"
+        }
+      },
+      "notes": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "deepseek-v3",
+          "mode": "list",
+          "cachedResultName": "deepseek-v3"
+        },
+        "options": {
+          "frequencyPenalty": 0,
+          "responseFormat": "json_object",
+          "temperature": 0.7,
+          "timeout": 300000,
+          "maxRetries": 2,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        64
+      ],
+      "id": "4b479ae2-55fc-4601-80b3-4b3246b76b0e",
+      "name": "deepseek-v3 ",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "KcHzWF39O8ZtiGQr",
+          "name": "OpenAi account"
+        }
+      },
+      "notes": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.feishu.cn/open-apis/bitable/v1/apps/{{ $json.app_token }}/tables/{{ $json.table_id }}/records",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"fields\": {\n    \"标题\": {{ $('固定字段').item.json['标题'].toJsonString() }},\n    \"摘要\": {{ $('固定字段').item.json['摘要'].toJsonString() }},\n    \"原始内容\": {{ $('固定字段').item.json['原始内容'].toJsonString() }},\n    \"原始链接\": {\n      \"text\": {{ $('固定字段').item.json['原始链接'].toJsonString() }},\n      \"link\": {{ $('固定字段').item.json['原始链接'].toJsonString() }}\n    },\n    \"来源名称\": {{ $('固定字段').item.json['来源名称'].toJsonString() }},\n    \"来源类型\": {{ $('固定字段').item.json['来源类型'].toJsonString() }},\n    \"发布时间\": {{ $('固定字段').item.json[\"发布时间\"] }},\n    \"领域相关度得分\": {{ $('固定字段').item.json['领域相关度得分'] }},\n    \"时效性热点程度得分\": {{ $('固定字段').item.json['时效性热点程度得分'] }},\n    \"深度新颖性得分\": {{ $('固定字段').item.json['深度新颖性得分'] }},\n    \"影响力重要性得分\": {{ $('固定字段').item.json['影响力重要性得分'] }},\n    \"最终热度得分\": {{ $('固定字段').item.json['最终热度得分'] }},\n    \"AI潜力得分\": {{ $('固定字段').item.json['AI潜力得分'] }},\n    \"一级赛道\": {{ $('固定字段').item.json['一级赛道'].toJsonString() }},\n    \"内容类型\": {{ $('固定字段').item.json['内容类型'].toJsonString() }},\n    \"机器标签\": {{ $('固定字段').item.json['机器标签'].toJsonString() }},\n    \"竞争度\": {{ $('固定字段').item.json['竞争度'].toJsonString() }},\n    \"变现潜力\": {{ $('固定字段').item.json['变现潜力'].toJsonString() }},\n    \"执行槽位\": {{ $('固定字段').item.json['执行槽位'].toJsonString() }},\n    \"执行建议\": {{ $('固定字段').item.json['执行建议'].toJsonString() }},\n    \"执行策略详情\": {{ $('固定字段').item.json['执行策略详情'].toJsonString() }},\n    \"优先级\": {{ $('固定字段').item.json['优先级'].toJsonString() }},\n    \"人工优先级修正\": {{ $('固定字段').item.json['人工优先级修正'].toJsonString() }},\n    \"状态\": {{ $('固定字段').item.json['状态'].toJsonString() }},\n    \"紧急预警标记\": {{ $('固定字段').item.json['紧急预警标记'] }},\n    \"选题池类型\": {{ $('固定字段').item.json['选题池类型'].toJsonString() }}\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2208,
+        -176
+      ],
+      "id": "1be5d543-c6e8-4353-87c2-d289ff8f1b44",
+      "name": "新增记录到表格",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "title",
+              "field2": "title"
+            },
+            {
+              "field1": "link",
+              "field2": "link"
+            }
+          ]
+        },
+        "joinMode": "keepNonMatches",
+        "outputDataFrom": "input1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        192,
+        -80
+      ],
+      "id": "6eb7b045-eaa9-4c96-83d5-637c6bf47886",
+      "name": "去重(title+link)",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ========================================\n// 合并规则层 4 维度 (relevance/timeliness/depth/impact) 与 AI 微调与潜力分\n// ========================================\n\n// Author:@南哥AGI研习社 (B站 or YouTube 搜索“南哥AGI研习社”)\n\n// ========================================\n// 工具函数：将数值限制在指定范围内\n// ========================================\nfunction clamp(v, min, max) {\n  return Math.max(min, Math.min(max, v));\n}\n\n// ========================================\n// 四维度权重配置：用于加权计算各维度的重要性\n// 注意：总和不需要等于 1，后续会进行归一化处理\n// ========================================\nconst WEIGHTS = {\n  relevance: 1.2,  // 领域相关度权重\n  timeliness: 1.0, // 时效性权重\n  depth: 1.0,      // 深度/新颖性权重\n  impact: 1.3      // 行业影响力权重\n};\n\n// ========================================\n// AI 潜力分在总分中的占比配置\n// AI_WEIGHT = 0.2 表示 AI 潜力占 20%，四维度合计占 80%\n// ========================================\nconst AI_WEIGHT = 0.2;\n\n// ========================================\n// 紧急预警阈值配置\n// 用于判断是否需要触发突发新闻预警\n// ========================================\nconst URGENT_ALERT_CONFIG = {\n  SCORE_THRESHOLD: 85,      // 最终得分阈值：≥85分触发预警\n  TIMELINESS_THRESHOLD: 20, // 时效性阈值：≥20分触发预警\n  IMPACT_THRESHOLD: 20      // 影响力阈值：≥20分触发预警\n};\n\n// ========================================\n// 获取规则层的打分结果\n// ========================================\nconst rule = $('基于规则打分').first().json.rule_scores || {};\n// ========================================\n// 获取 AI 层的输出结果\n// ========================================\nconst ai = $input.first().json.output;\n// 获取 AI 层对四维度的微调分数\nconst adj = ai.adjust_scores || {};\n\n// ========================================\n// (1) 合并四个维度分：规则基础分 + AI 微调分\n// 每个维度的有效范围：0~25 分\n// ========================================\n\n// 相关性得分 = 规则层相关性分 + AI 微调值，限制在 0-25 范围内\nconst relevance = clamp((rule.relevance || 0) + (adj.relevance_adjust || 0), 0, 25);\n\n// 时效性得分 = 规则层时效性分 + AI 微调值，限制在 0-25 范围内\nconst timeliness = clamp((rule.timeliness || 0) + (adj.timeliness_adjust || 0), 0, 25);\n\n// 深度得分 = 规则层深度分 + AI 微调值，限制在 0-25 范围内\nconst depth = clamp((rule.depth || 0) + (adj.depth_adjust || 0), 0, 25);\n\n// 影响力得分 = 规则层影响力分 + AI 微调值，限制在 0-25 范围内\nconst impact = clamp((rule.impact || 0) + (adj.impact_adjust || 0), 0, 25);\n\n// 将四个维度得分封装为对象\nconst factor_scores = { relevance, timeliness, depth, impact };\n\n// ========================================\n// (2) 将四维度进行加权平均，并映射到 0~100 分制\n// ========================================\n\n// 获取相关性权重\nconst wRel = WEIGHTS.relevance || 1;\n\n// 获取时效性权重\nconst wTime = WEIGHTS.timeliness || 1;\n\n// 获取深度权重\nconst wDepth = WEIGHTS.depth || 1;\n\n// 获取影响力权重\nconst wImpact = WEIGHTS.impact || 1;\n\n// 计算权重总和，用于归一化\nconst wSum = wRel + wTime + wDepth + wImpact;\n\n// 计算加权平均分：结果范围 0~25\nconst weightedFactorAvg =\n  (relevance * wRel + timeliness * wTime + depth * wDepth + impact * wImpact) / wSum;\n\n// 将加权平均分映射到 0~100 分制（乘以 4）\nconst fourFactorScore = weightedFactorAvg * 4;\n\n// ========================================\n// (3) 处理 AI 潜力分：从 0~10 映射到 0~100\n// ========================================\n\n// 获取 AI 潜力原始分数（0~10）\nconst ai_potential_score = ai.ai_potential_score || 0;\n\n// 将 AI 潜力分映射到 0~100 分制（乘以 10），并限制在有效范围内\nconst aiScore100 = clamp(ai_potential_score * 10, 0, 100);\n\n// ========================================\n// (4) 计算最终总分：四维度得分 + AI 潜力得分的加权组合\n// ========================================\n\n// 计算四维度在总分中的占比（80%）\nconst factorPortion = (1 - AI_WEIGHT);\n\n// 最终得分 = 四维度得分 × 80% + AI 潜力得分 × 20%\nlet final_score = fourFactorScore * factorPortion + aiScore100 * AI_WEIGHT;\n\n// 确保最终得分在 0~100 范围内\nfinal_score = clamp(final_score, 0, 100);\n\n// ========================================\n// (5) 根据最终得分确定优先级等级\n// 可以按需调整阈值\n// ========================================\n\n// 初始化优先级为\"低\"\nlet priority = '低';\n\n// 根据分数区间设置优先级\nif (final_score >= 80) priority = '必做';       // 80分以上：必做\nelse if (final_score >= 60) priority = '高';    // 60-79分：高优先级\nelse if (final_score >= 40) priority = '中';    // 40-59分：中优先级\n// 40分以下：保持\"低\"优先级\n\n// ========================================\n// (6) 获取竞争度和变现潜力，用于决定执行槽位\n// ========================================\n\n// 获取内容竞争度（低/中/高）\nconst competition_level = ai.competition_level || '低';\n\n// 获取变现潜力（低/中/高）\nconst monetization_potential = ai.monetization_potential || '低';\n\n// ========================================\n// 根据综合条件判断执行槽位\n// ========================================\n\n// 初始化执行槽位为\"观察\"\nlet execution_slot = '观察';\n\n// 判断逻辑：高分且低竞争 → 必做主线\nif (final_score >= 80 && (competition_level === '低' || competition_level === '中')) {\n  execution_slot = '必做主线';\n} \n// 判断逻辑：较高分但高竞争 → 高优先（需做差异化深度）\nelse if (final_score >= 70 && competition_level === '高') {\n  execution_slot = '高优先';\n} \n// 判断逻辑：中高分且高变现潜力 → 高优先（偏商业价值）\nelse if (final_score >= 60 && monetization_potential === '高') {\n  execution_slot = '高优先';\n} \n// 判断逻辑：中等分数 → 中优先\nelse if (final_score >= 40) {\n  execution_slot = '中优先';\n}\n// 其他情况：保持\"观察\"状态\n\n// ========================================\n// 生成执行策略详情文案\n// 根据执行槽位、竞争度、变现潜力等因素，生成具体的执行建议\n// ========================================\nfunction generateStrategyDetail(params) {\n  const { competition_level, monetization_potential, execution_slot, depth, impact } = params;\n  \n  let strategy = '';\n  \n  // 策略 1: 必做主线 - 抢占先发优势\n  if (execution_slot === '必做主线') {\n    if (competition_level === '低' || competition_level === '中') {\n      strategy = `🎯 抢占先发优势策略\n• 响应时间: 2 小时内完成初稿\n• 资源配置: 主编+资深编辑\n• 内容方向: 独家深度解读，建立话题权威\n• 分发策略: 全平台同步首发，SEO 优化\n• 预期效果: 占据该话题搜索前 3 位`;\n    } else {\n      // 必做但竞争度高的情况\n      strategy = `⚔️ 红海突围策略  \n• 响应时间: 4 小时内（非最快，但要最深）\n• 资源配置: 技术主笔+数据分析\n• 内容方向: 技术拆解/性能对比/独家采访，做差异化\n• 分发策略: 长文深度为主，配合短视频二次传播\n• 预期效果: 后发制人，成为该话题权威解读`;\n    }\n  }\n  \n  // 策略 2: 高优先级 - 差异化深度策略\n  else if (execution_slot === '高优先' && competition_level === '高') {\n    strategy = `🔍 差异化深度策略\n• 响应时间: 当日完成\n• 资源配置: 资深编辑\n• 内容方向: 全网已有快讯，需切独特角度（技术原理/行业影响/对比评测）\n• 分发策略: 避开快讯时段，做深度长文\n• 预期效果: 在已有报道基础上建立专业形象`;\n  }\n  \n  // 策略 3: 高优先级 - 商业价值最大化策略\n  else if (execution_slot === '高优先' && monetization_potential === '高') {\n    strategy = `💰 商业价值最大化策略\n• 响应时间: 2 天内\n• 资源配置: 编辑+商务协同\n• 内容方向: 嵌入企业案例/工具推荐/实战指南\n• 变现路径: 咨询线索/付费报告/课程引流/企业服务合作\n• 预期效果: 直接产生商业转化，ROI 可追踪`;\n  }\n  \n  // 策略 4: 中优先 - 常规覆盖策略\n  else if (execution_slot === '中优先') {\n    strategy = `📝 常规覆盖策略\n• 响应时间: 本周完成\n• 资源配置: 常规编辑\n• 内容方向: 标准流程，保持更新节奏\n• 分发策略: 主站发布，社交媒体同步\n• 预期效果: 日常流量贡献`;\n  }\n  \n  // 策略 5: 观察状态 - 待发展策略\n  else {\n    strategy = `👀 观察待发展策略\n• 当前建议: 暂不投入资源\n• 收藏原因: ${depth >= 15 ? '有一定深度潜力，' : ''}${impact >= 12 ? '可能后续发酵' : '当前价值不足'}\n• 触发条件: 若事态发展/竞争度降低/出现独家角度，系统自动提权\n• 操作: 加入\"观察池\"视图，每周复查`;\n  }\n  \n  return strategy;\n}\n\n// ========================================\n// 调用策略生成函数，获取详细执行策略文案\n// ========================================\nconst execution_strategy_detail = generateStrategyDetail({\n  competition_level: competition_level,\n  monetization_potential: monetization_potential,\n  execution_slot: execution_slot,\n  depth: depth,\n  impact: impact\n});\n\n// ========================================\n// 紧急预警判断逻辑\n// 根据最终得分、时效性、影响力、执行槽位等综合条件判断是否需要触发预警\n// ========================================\nconst urgent_alert = \n  final_score >= URGENT_ALERT_CONFIG.SCORE_THRESHOLD &&\n  timeliness >= URGENT_ALERT_CONFIG.TIMELINESS_THRESHOLD &&\n  (impact >= URGENT_ALERT_CONFIG.IMPACT_THRESHOLD || execution_slot === '必做主线');\n\n// ========================================\n// 返回处理结果\n// ========================================\nreturn {\n  json: {\n    // 存储四个维度的最终得分（合并规则层与 AI 微调后）\n    factor_scores: factor_scores,\n\n    // 最终总分（0-100）和 AI 潜力原始分（0-10）\n    final_score: Math.round(final_score),\n    ai_potential_score: ai_potential_score,\n    \n    // 分类与标签信息\n    // 优先使用 AI 层结果，如果缺失则使用规则层兜底\n    primary_track: ai.primary_track || $('基于规则打分').first().json.primary_track || '综合AI资讯',\n    content_type: ai.content_type || '快讯',\n    monetization_potential: monetization_potential,\n    machine_tags: ai.machine_tags || $('基于规则打分').first().json.basic_tags || [],\n    competition_level: competition_level,\n    execution_hint: ai.execution_hint || '',\n    execution_slot: execution_slot,\n    priority: priority,\n    \n    // 执行策略详情：包含具体的执行建议和打法指导\n    execution_strategy_detail: execution_strategy_detail,\n    \n    // ========================================\n    // 紧急预警标记\n    // true 表示需要立即触发预警通知（推送到飞书）\n    // ========================================\n    urgent_alert: urgent_alert\n  },\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        -176
+      ],
+      "id": "5e2e43a0-e7ad-4687-8702-4310595eba2d",
+      "name": "合并分数(按权重)",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "notes": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1056,
+        -384
+      ],
+      "id": "2a84c855-bddf-4d14-88cc-41dfabf52534",
+      "name": "等待两秒",
+      "webhookId": "5c859433-a2f0-4044-96c7-0c7750845b46"
+    },
+    {
+      "parameters": {
+        "content": "## 主循环体\n- 对RSS源逐一进行逻辑处理\n- 调用子工作流进行逻辑处理\n- 全部处理完成后发送即时群消息",
+        "height": 608,
+        "width": 656,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1344,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "4a1d549a-ca6a-495d-9359-3983f0defaf7",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=需要进行文本摘要的文本：## {{ $json.content }} ##",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=# 角色 : 文本摘要生成高手\n- 专注于从大量文本中快速提取关键信息，生成简洁、准确、保留原文核心信息的摘要。\n- 无特定背景要求，适用于处理各种类型的文本摘要需求。\n\n## 背景 :\n- 倾向于生成简洁、清晰的摘要，避免冗余信息。\n- 保持摘要的客观性和中立性。\n\n## 简介 :\n- author: 南哥AGI研习社(B站、YouTube)\n- version: 1.0\n- language: 中文\n- description: 专门执行文本摘要任务，从原始文本中提取关键信息，生成简短、清晰的摘要。\n\n## 任务 :\n- 从用户提供的文本中准确提取关键信息。\n- 生成简洁、清晰且保留原文主旨的摘要。\n\n## 约束条件 :\n- 不添加个人观点或解释。\n- 不包含超出原文内容的信息。\n\n## 技能 :\n- 快速阅读和理解大量文本。\n- 精准提取关键信息和核心观点。\n- 简洁、准确的表达能力。\n\n## 工作流：\n- 首先快速阅读全文，理解其主要内容。\n- 然后识别并提取关键信息和核心观点。\n- 最后以简洁、准确的语言组织摘要。\n\n## 输出格式 :\n- 以简洁、清晰的句子形式呈现摘要。\n\n## 输出执行步骤：\n### 第一步：理解全文\n- 1）快速阅读全文，把握文章的主题、论点和结构。\n- 2）识别文章的重要信息和次要信息。\n- 3）注意文章的语气和目的。\n### 第二步：提取关键信息\n- 1）确定文章的主要论点和证据。\n- 2）提取文章的关键信息和数据。\n- 3）识别并记录文章中的特殊术语或概念。\n### 第三步：组织摘要内容\n- 1）选择合适的句子结构，以简洁、直接的方式表达。\n- 2）确保摘要的连贯性和逻辑性。\n- 3）使用清晰、标准的语言，避免复杂或模糊的表达。\n### 第四步：审阅和修改\n- 1）检查摘要的准确性和流畅性。\n- 2）确保摘要没有遗漏重要的信息。\n- 3）调整语言和句子结构，以提高摘要的质量。\n### 第五步：最终检查\n- 1）确认摘要的长度适中，保持原文的40%。\n- 2）确保摘要中没有主观评价或情感色彩。\n- 3）最后检查语法和拼写错误。\n- 确保摘要准确反映原文的主旨和重点。\n\n## 输出标准\n### 内容要求\n- **精确性**：摘要应准确反映原文的主要信息和核心观点，不添加个人解释或推测。\n- **简洁性**：摘要应尽可能简洁，去除冗余信息，同时保留原文的必要细节。\n- **客观性**：摘要应保持客观和中立，不包含主观评价或情感色彩。\n- **逻辑性**：摘要的结构应清晰，信息组织合理，易于理解。\n### 格式要求\n- **文本长度**：摘要的长度应适中，保持原文的40%。\n- **句子结构**：使用简单、直接的句子结构，避免复杂的从句或长句。\n- **语言风格**：使用清晰、标准的语言，保留专业术语，避免使用难懂的词汇，除非它们对于理解摘要至关重要。\n\n## 初始化\n作为文本摘要生成高手，我专注于从大量文本中快速提取关键信息，生成简洁、准确、保留原文核心信息的摘要。请按照格式【需要进行文本摘要的文本：##（这里填写需要进行文本摘要的文本。）##】提供需要进行摘要的文本。\n",
+          "maxIterations": 10,
+          "returnIntermediateSteps": false,
+          "passthroughBinaryImages": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        768,
+        -176
+      ],
+      "id": "844618c5-1ec9-4418-b9ad-74be24148ac1",
+      "name": "AI文章摘要生成",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "AI Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=需要进行处理的候选新闻素材：\n##\n{\n  \"account_positioning\": \"类似量子位的科技媒体账号，持续追踪人工智能与前沿科技的新趋势，聚焦大模型、Agent、算力与芯片、云基础设施、行业落地、科研突破和监管政策。\",\n  \"title\": {{ $('数据清洗').item.json.title.toJsonString() }},\n  \"summary\": {{ $('AI文章摘要生成').item.json.output.summary.toJsonString() }},\n  \"source_name\": {{ $('数据清洗').item.json.source_name.toJsonString() }},\n  \"source_type\": {{ $('数据清洗').item.json.source_type.toJsonString() }},\n  \"pub_hours_ago\": {{$json[\"pub_hours_ago\"] || 999}},\n  \"rule_scores\": {{$json[\"rule_scores\"].toJsonString()}},\n  \"basic_tags\": {{$json[\"basic_tags\"]}}\n}\n##\n",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=# 角色：AI与前沿科技新闻资深编辑\n你是一名AI/科技媒体编辑部的AI与前沿科技新闻资深编辑，服务的账号类似“量子位”的科技媒体。\n\n## 背景：\n- 持续追踪全球人工智能与前沿科技的新趋势\n- 重点覆盖：大模型（LLM / 基础模型）、Agent、多模态、基础设施（算力、芯片、云）、AI 在各行业落地案例、重要论文与科研成果、产业动向、监管与政策变动\n- 受众是关注 AI 行业、科技创新、创业与投资的专业读者\n\n## 简介 :\n- author: 南哥AGI研习社(B站、YouTube)\n- version: 1.1\n- language: 中文\n- description: 一名AI与前沿科技新闻资深编辑，持续追踪全球人工智能与前沿科技的新趋势。\n\n## 任务\n现在有一条候选新闻素材，规则层已经根据标题、摘要和发布时间打了一个初始四个维度的评分。你需要从“AI/科技媒体编辑部”的视角，对这条素材进行更细致的评估和标注。\n\n### 四个评分维度的含义为：\n- relevance：领域相关度。衡量这条新闻是否真正属于「人工智能 / 前沿科技」范围，以及与上述关注方向的贴合度。\n- timeliness：时效性与热点程度。衡量新闻有多新，以及是否属于当前正在发酵/热议的事件。\n- depth：深度与新颖性。衡量其包含的技术细节、研究内容、独特观点、数据/实验等，是否值得做长文解析或系列追踪。\n- impact：影响力与重要性。衡量这件事情对行业格局、技术路线、商业落地、资本市场或政策环境的潜在影响。\n\n规则层已经给出了一个基于标题、摘要和发布时间的初始评分rule_scores，你需要在此基础上进行“语义层面的微调”，而不是完全重算。\n\n### 请你：\n1. 综合考虑标题、摘要、来源（媒体/官方博客/学术机构/政策机构等）、发布时间以及初始评分rule_scores。\n2. 用自己的判断对四个维度进行小幅度调整（±5 或 ±10），纠正规则打分的偏差。\n3. 给出这条素材在我们的内容策略中的定位：属于哪类赛道（primary_track）、适合用什么内容形式呈现（content_type）、是否值得做深度稿（deep_dive_suitable）、变现/商业结合潜力（monetization_potential）、竞争度（competition_level）以及一个简短的执行建议（execution_hint）。\n4. 评估一个 0~10 的 ai_potential_score，代表“整体内容潜力”，包括：对读者的吸引力、媒体报道价值、是否有进一步挖掘空间。\n\n### 输出要求：\n- 严格返回一个 JSON 对象，不要任何多余解释或自然语言。\n- JSON 中字段必须完全符合以下定义：\n  - adjust_scores：对象\n    - relevance_adjust：-5 到 +5 的整数，用于在 rule_scores.relevance 基础上调整\n    - timeliness_adjust：-5 到 +5 的整数\n    - depth_adjust：-10 到 +10 的整数（允许对深度做更大幅度调整）\n    - impact_adjust：-10 到 +10 的整数（允许对影响力做更大幅度调整）\n  - primary_track：字符串，用于标记一级赛道，常见取值示例（可视情况选择或自行输出更准确的）：\n    - 「大模型/基础模型」\n    - 「Agent/自动化」\n    - 「多模态/视觉/语音」\n    - 「算力/芯片」\n    - 「云/基础设施」\n    - 「机器人/自动驾驶」\n    - 「AI治理/政策」\n    - 「论文/科研」\n    - 「综合AI资讯」\n    - 「无关」（如果和 AI/前沿科技关联很弱）\n  - content_type：字符串，用于标记内容形态，示例：\n    - 「快讯」\n    - 「长文解读」\n    - 「技术拆解」\n    - 「产业分析」\n    - 「投融资」\n    - 「政策解读」\n    - 「报告盘点」\n    - 「人物专访」\n  - deep_dive_suitable：布尔值，true/false，表示是否适合做深度稿或系列稿。\n  - monetization_potential：字符串，取值必须是「高」「中」「低」，表示是否有较强的商业价值。\n  - ai_potential_score：0~10 的整数，数字越大，说明这条素材越值得优先关注和投入创作。\n  - machine_tags：字符串数组，至少返回 3 个标签，尽量具体，例如：\n    - 「大模型」「SaaS 应用」「融资」「开源项目」「多模态模型」「GPU 算力」「监管政策」「NeurIPS 论文」\n  - competition_level：字符串，取值「高」「中」「低」，表示当前中文/英文互联网相关报道的潜在拥挤程度（你可以基于关键词和主题常识估计）。\n  - execution_hint：字符串，长度不超过 30 个汉字，给人类编辑的简短操作建议，例如：\n    - 「适合做长文技术拆解」\n    - 「做一篇快讯跟进即可」\n    - 「需追踪后续进展再写」\n    - 「适合做投融资盘点稿」\n\n### 请确保：\n- 只返回 JSON，对字段含义不做说明。\n- 不要出现多余的文本、前缀或后缀。\n\n## 初始化\n请按照格式【需要进行处理的候选新闻素材：##（这里填写候选新闻素材。）##】提供需要进行处理的候选新闻素材。\n",
+          "maxIterations": 10,
+          "returnIntermediateSteps": false,
+          "passthroughBinaryImages": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1328,
+        -176
+      ],
+      "id": "3bb36c4e-708c-42f9-8610-abd92fcc0814",
+      "name": "AI四维度评分结果微调",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "AI Agent"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/im/v1/messages",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "receive_id_type",
+              "value": "chat_id"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书token').item.json.tenant_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"receive_id\":\"oc_9619619c722d54d1b6589f7405855d59\",\n    \"msg_type\": \"post\",\n    \"content\":\"{\\\"zh_cn\\\":{\\\"title\\\":\\\"突发新闻实时预警推送\\\",\\\"content\\\":[[{\\\"tag\\\":\\\"at\\\",\\\"user_id\\\":\\\"\\\",\\\"user_name\\\":\\\"所有人\\\"}],[{\\\"tag\\\":\\\"md\\\",\\\"text\\\":\\\"**新增选题AI评审触发了紧急预警标记，有突发新闻实时预警推送。** \\\"}],[{\\\"tag\\\":\\\"a\\\",\\\"href\\\":\\\"https://mcn33lfbwjgi.feishu.cn/base/VrjBb09mZaZauLsFdRrcqTSsnVe?table=tbl75OvZpQtdLABJ&view=vewvITmbRm\\\",\\\"text\\\":\\\"点击查看详情\\\"}]]}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2560,
+        -176
+      ],
+      "id": "626d1ff5-fc41-4fa3-a225-9e983ba6189f",
+      "name": "推送预警消息",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ca5ee305-81f6-4ddd-bb58-c5cc1fc5a914",
+              "leftValue": "={{ $('固定字段').item.json['紧急预警标记'] }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2384,
+        -176
+      ],
+      "id": "31dbc62a-fef8-4b70-beb5-0373b9ae7d1f",
+      "name": "是否触发紧急预警标记",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "If"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 12
+            },
+            {
+              "triggerAtHour": 17
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2352,
+        32
+      ],
+      "id": "4740584f-72a9-4ed3-996a-4d72abdbd552",
+      "name": "每天12点和17点定时触发"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "获取飞书token": {
+      "main": [
+        [
+          {
+            "node": "指定RSS源管理表",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "循环处理": {
+      "main": [
+        [
+          {
+            "node": "合并最终数据统一处理",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "读取RSS源",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "设置应用凭证",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "合并最终数据统一处理": {
+      "main": [
+        [
+          {
+            "node": "向群组发送已完成消息",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "设置应用凭证": {
+      "main": [
+        [
+          {
+            "node": "获取飞书token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "循环处理 ": {
+      "main": [
+        [
+          {
+            "node": "等待两秒",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "数据清洗",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "清洗数据": {
+      "main": [
+        [
+          {
+            "node": "保留24小时内数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "拆分数据": {
+      "main": [
+        [
+          {
+            "node": "去重(title+link)",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "保留24小时内数据": {
+      "main": [
+        [
+          {
+            "node": "去重(title+link)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取过去30天内记录": {
+      "main": [
+        [
+          {
+            "node": "拆分数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "数据清洗": {
+      "main": [
+        [
+          {
+            "node": "AI文章摘要生成",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "基于规则打分": {
+      "main": [
+        [
+          {
+            "node": "AI四维度评分结果微调",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "指定多维表格 ": {
+      "main": [
+        [
+          {
+            "node": "新增记录到表格",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "固定字段": {
+      "main": [
+        [
+          {
+            "node": "指定多维表格 ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI文章摘要生成",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deepseek-v3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI文章摘要生成",
+            "type": "ai_languageModel",
+            "index": 1
+          },
+          {
+            "node": "强制格式化输出",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "强制格式化输出": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI文章摘要生成",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "读取RSS源": {
+      "main": [
+        [
+          {
+            "node": "HTML转为Markdown",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "指定选题池多维表格",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML转为Markdown": {
+      "main": [
+        [
+          {
+            "node": "清洗数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取RSS源列表": {
+      "main": [
+        [
+          {
+            "node": "拆分RSS源列表",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "拆分RSS源列表": {
+      "main": [
+        [
+          {
+            "node": "循环处理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "指定RSS源管理表": {
+      "main": [
+        [
+          {
+            "node": "获取RSS源列表",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "指定选题池多维表格": {
+      "main": [
+        [
+          {
+            "node": "获取过去30天内记录",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "强制格式化输出 ": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI四维度评分结果微调",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o-mini ": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI四维度评分结果微调",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deepseek-v3 ": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI四维度评分结果微调",
+            "type": "ai_languageModel",
+            "index": 1
+          },
+          {
+            "node": "强制格式化输出 ",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "新增记录到表格": {
+      "main": [
+        [
+          {
+            "node": "是否触发紧急预警标记",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "去重(title+link)": {
+      "main": [
+        [
+          {
+            "node": "循环处理 ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "合并分数(按权重)": {
+      "main": [
+        [
+          {
+            "node": "固定字段",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "等待两秒": {
+      "main": [
+        [
+          {
+            "node": "循环处理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI文章摘要生成": {
+      "main": [
+        [
+          {
+            "node": "基于规则打分",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI四维度评分结果微调": {
+      "main": [
+        [
+          {
+            "node": "合并分数(按权重)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "推送预警消息": {
+      "main": [
+        [
+          {
+            "node": "循环处理 ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "是否触发紧急预警标记": {
+      "main": [
+        [
+          {
+            "node": "推送预警消息",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "循环处理 ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2c3abad6-2f37-424f-9236-7d126fbb33f8",
+  "meta": {
+    "instanceId": "830bfffc51ff88cd51b86a768f6a50a5b290896243e17b0bdf0f08551c38ba51"
+  },
+  "id": "YBRCvKgBIhNb7LJu",
+  "tags": [
+    {
+      "updatedAt": "2025-12-24T02:04:19.807Z",
+      "createdAt": "2025-12-24T02:04:19.807Z",
+      "id": "7VxF0aUtlavDiK5p",
+      "name": "选题雷达模型"
+    },
+    {
+      "updatedAt": "2025-10-30T12:47:20.269Z",
+      "createdAt": "2025-10-30T12:47:20.269Z",
+      "id": "f21vDmcMsvedJbTO",
+      "name": "飞书"
+    },
+    {
+      "updatedAt": "2025-12-24T02:03:59.943Z",
+      "createdAt": "2025-12-24T02:03:59.943Z",
+      "id": "mn1xzWvFhYinK7S3",
+      "name": "选题池"
+    },
+    {
+      "updatedAt": "2025-12-11T03:10:23.364Z",
+      "createdAt": "2025-12-11T03:10:23.364Z",
+      "id": "oA2SUvB8FyMOZ7QI",
+      "name": "RSS"
+    },
+    {
+      "updatedAt": "2025-12-15T05:59:01.229Z",
+      "createdAt": "2025-12-15T05:59:01.229Z",
+      "id": "vvSdsOAB9ETafUmt",
+      "name": "多维表格"
+    }
+  ]
+}
